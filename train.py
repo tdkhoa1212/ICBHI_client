@@ -178,6 +178,13 @@ def train(args):
     print(f'\nShape of train data: {image_train_data.shape} \t {train_label.shape}')
     print(f'Shape of test data: {image_test_data.shape} \t {test_label.shape}\n')
 
+    image_train_data = image_train_data.astype(np.float32)
+    image_test_data = image_test_data.astype(np.float32)
+
+    train_label = train_label.astype(np.float32)
+    test_label = test_label.astype(np.float32)
+    
+    #-------------------------- MIXUP --------------------------------------------------------------------
     train_ds_one = (tf.data.Dataset.from_tensor_slices((image_train_data, train_label)).shuffle(args.batch_size * 100).batch(args.batch_size))
     train_ds_two = (tf.data.Dataset.from_tensor_slices((image_train_data, train_label)).shuffle(args.batch_size * 100).batch(args.batch_size))
     train_ds = tf.data.Dataset.zip((train_ds_one, train_ds_two))
