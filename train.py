@@ -11,7 +11,10 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from nets.CNN import EfficientNetV2M, MobileNetV2, InceptionResNetV2, ResNet152V2
 from sklearn.model_selection import train_test_split
-from utils.tools import to_onehot, load_df, create_spectrograms_raw, get_annotations, get_sound_samples, save_df, sensitivity, specificity, average_score, harmonic_mean, matrices, create_stft
+from utils.tools import to_onehot, load_df, create_spectrograms_raw, \
+                        get_annotations, get_sound_samples, save_df, sensitivity, \
+                        specificity, average_score, harmonic_mean, \
+                        matrices, create_stft, mix_up
 from sklearn.metrics import confusion_matrix, accuracy_score, ConfusionMatrixDisplay
 import progressbar
 
@@ -174,6 +177,11 @@ def train(args):
     ######################## TRAIN PHASE ##################################################################
     print(f'\nShape of train data: {image_train_data.shape} \t {train_label.shape}')
     print(f'Shape of test data: {image_test_data.shape} \t {test_label.shape}\n')
+
+    train_ds_one = (tf.data.Dataset.from_tensor_slices((image_train_data, image_train_data)).shuffle(args.batch_size * 100).batch(args.batch_size))
+    train_ds_two = (tf.data.Dataset.from_tensor_slices((image_train_data, image_train_data)).shuffle(args.batch_size * 100).batch(args.batch_size))
+    train_ds = tf.data.Dataset.zip((train_ds_one, train_ds_two))
+    train_ds_mu = train_ds.map(lambda ds_one, ds_two: mix_up(ds_one, ds_two, alpha=0.3), num_parallel_calls=AUTO)
     
     # load neural network model
     if args.model_name == 'EfficientNetV2M':
@@ -191,7 +199,7 @@ def train(args):
     model.compile(optimizer=tf.keras.optimizers.RMSprop(1e-4), loss='categorical_crossentropy', metrics=['acc', sensitivity, specificity, average_score, harmonic_mean]) 
     model.summary()
     if args.train:
-        history = model.fit(image_train_data, train_label,
+        history = model.fit(train_ds_mu,
                             epochs     = args.epochs,
                             batch_size = args.batch_size,)
         model.save(os.path.join(args.model_path, name))
