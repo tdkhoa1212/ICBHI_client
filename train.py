@@ -181,7 +181,7 @@ def train(args):
     train_ds_one = (tf.data.Dataset.from_tensor_slices((image_train_data, image_train_data)).shuffle(args.batch_size * 100).batch(args.batch_size))
     train_ds_two = (tf.data.Dataset.from_tensor_slices((image_train_data, image_train_data)).shuffle(args.batch_size * 100).batch(args.batch_size))
     train_ds = tf.data.Dataset.zip((train_ds_one, train_ds_two))
-    train_ds_mu = train_ds.map(lambda ds_one, ds_two: mix_up(ds_one, ds_two, alpha=0.3), num_parallel_calls=AUTO)
+    train_ds_mu = train_ds.map(lambda ds_one, ds_two: mix_up(ds_one, ds_two, alpha=0.3), num_parallel_calls=tf.data.AUTOTUNE)
     
     # load neural network model
     if args.model_name == 'EfficientNetV2M':
