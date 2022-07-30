@@ -71,7 +71,7 @@ def cnn_1d_model(input_shape, training=None):
 
     x = MaxPooling1D(pool_size=2, strides=None)(x)
 
-    for i in range(23):
+    for i in range(6):
         x = identity_block(x, kernel_size=3, filters=256, stage=3, block=i, training=training)
 
     x = MaxPooling1D(pool_size=2, strides=None)(x)
