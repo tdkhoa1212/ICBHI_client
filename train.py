@@ -189,7 +189,6 @@ def train(args):
 
     # ---------------------------------Convert data to frequency by FFT------------------------------------
     if os.path.exists(os.path.join(args.save_data_dir, 'train_fft.pkz')):
-      # Load stft data, if they exist
       train_fft = load_df(os.path.join(args.save_data_dir, 'train_fft.pkz'))
       test_fft = load_df(os.path.join(args.save_data_dir, 'test_fft.pkz'))
     else:
@@ -198,13 +197,17 @@ def train(args):
       save_df(train_fft, os.path.join(args.save_data_dir, 'train_fft.pkz'))
       save_df(test_fft, os.path.join(args.save_data_dir, 'test_fft.pkz'))
 
-    print(f'\nShape of 1D training data{train_fft}')
-    print(f'Shape of 1D test data{test_fft}')
+    print(f'\nShape of 1D training data{train_fft.shape}')
+    print(f'Shape of 1D test data{test_fft.shape}')
     
     #-------------------------- MIXUP --------------------------------------------------------------------
-    train_ds_one = (image_train_data, train_fft, train_label)
-    train_ds_two = (image_train_data, train_fft, train_label)
-    train_ds_mu = mix_up(train_ds_one, train_ds_two, alpha=0.3)
+    if os.path.exists(os.path.join(args.save_data_dir, 'train_ds_mu.pkz')):
+      train_ds_mu = load_df(os.path.join(args.save_data_dir, 'train_ds_mu.pkz'))
+    else:
+      train_ds_one = (image_train_data, train_fft, train_label)
+      train_ds_two = (image_train_data, train_fft, train_label)
+      train_ds_mu = mix_up(train_ds_one, train_ds_two, alpha=0.3)
+      save_df(train_fft, os.path.join(args.save_data_dir, 'train_ds_mu.pkz'))
     
     # load neural network model
     if args.model_name == 'EfficientNetV2M':
