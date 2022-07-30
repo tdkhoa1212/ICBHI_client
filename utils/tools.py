@@ -8,10 +8,20 @@ import tensorflow as tf
 import matplotlib.pyplot as plt
 import librosa
 import cv2
+from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import confusion_matrix, accuracy_score
 
 import pickle as pkl
 from keras import backend as K
+
+def scaler_transform(signals):
+  data = []
+  scale = MinMaxScaler()
+  for signal in signals:
+    if len(signal.shape) < 2:
+      signal = np.expand_dims(signal, axis=-1)
+    data.append(scale.fit_transform(signal))
+  return np.array(data)
 
 # load data from start time to end time in each audio file
 def slice_data(start, end, raw_data, sample_rate):

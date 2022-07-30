@@ -7,7 +7,7 @@ from tensorflow.keras.layers import Conv1D, Activation, Dense, concatenate, Batc
 def CNN_1D_2D_model(image_length=224, fft_length=64653, training=False):
     ################# CNN 2D ################################
     input_2D = Input(shape=(image_length, image_length, 1))
-    base_model_2D = tf.keras.applications.EfficientNetV2M(include_top=False,
+    base_model_2D = tf.keras.applications.InceptionResNetV2(include_top=False,
                                                             input_shape=(image_length, image_length, 1),
                                                             weights=None)
     model_2D = base_model_2D(input_2D, training=training)
@@ -32,8 +32,8 @@ def CNN_1D_2D_model(image_length=224, fft_length=64653, training=False):
     output = output_1D + output_2D
     output = BatchNormalization()(output, training=training)
     output = Activation('relu')(output)
-    output = Dropout(0.1)(output, training=training)
-    output = Dense(4, activation=ReLU(), 
+    output = Dropout(0.2)(output, training=training)
+    output = Dense(4, activation='softmax', 
                             kernel_regularizer=regularizers.l1_l2(l1=1e-5, l2=1e-4),
                             bias_regularizer=regularizers.l2(1e-4),
                             activity_regularizer=regularizers.l2(1e-5))(output)

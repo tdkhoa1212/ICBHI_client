@@ -215,7 +215,6 @@ def train(args):
 
 
     print(f'\nShape of 1D MIXUP training data: {images_org.shape}, {ffts_org.shape}, {labels_org.shape}\n')
-    
     # load neural network model
     if args.model_name == 'EfficientNetV2M':
       model = EfficientNetV2M(args.image_length, True)
@@ -257,7 +256,7 @@ def train(args):
     if args.predict:
         # outputs validation by matrices: sensitivity, specificity, average_score, harmonic_mean
         model.load_weights(os.path.join(args.model_path, name))
-        pred_label = model.predict(image_test_data)
+        pred_label = model.predict([image_test_data, test_fft])
         
         # Load matrices from predict data
         test_acc,  test_sensitivity,  test_specificity,  test_average_score, test_harmonic_mean  = matrices(test_label, pred_label)
