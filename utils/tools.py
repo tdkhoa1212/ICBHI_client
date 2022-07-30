@@ -260,7 +260,7 @@ def mix_up(ds_one, ds_two, alpha=[0.1, 0.2, 0.3], batch_size_range=[8, 16, 32]):
     images_org, ffts_org, labels_org = ds_one 
 
     for idx, batch_size in enumerate(batch_size_range):
-      num = int(len(labels_one)/batch_size + 1)
+      num = int(len(labels_one)/batch_size)
       for i in range(num):
         # Sample lambda and reshape it to do the mixup
         l = sample_beta_distribution(batch_size, alpha[idx], alpha[idx])
