@@ -202,7 +202,9 @@ def train(args):
     
     #-------------------------- MIXUP --------------------------------------------------------------------
     if os.path.exists(os.path.join(args.save_data_dir, 'images_org.pkz')):
-      train_ds_mu = load_df(os.path.join(args.save_data_dir, 'images_org.pkz'))
+      images_org = load_df(os.path.join(args.save_data_dir, 'images_org.pkz'))
+      ffts_org = load_df(os.path.join(args.save_data_dir, 'ffts_org.pkz'))
+      labels_org = load_df(os.path.join(args.save_data_dir, 'labels_org.pkz'))
     else:
       train_ds_one = (image_train_data, train_fft, train_label)
       train_ds_two = (image_train_data, train_fft, train_label)
