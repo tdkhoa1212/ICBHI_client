@@ -13,7 +13,7 @@ def CNN_1D_2D_model(image_length=224, fft_length=64653, training=False):
     model_2D = base_model_2D(input_2D, training=training)
     output_2D = Model(input_2D, model_2D)
     output_2D = output_2D([input_2D])
-    output_2D = GlobalAveragePooling1D()(output_2D)
+    output_2D = GlobalAveragePooling2D()(output_2D)
     output_2D = Dense(1024, activation=ReLU(), 
                             kernel_regularizer=regularizers.l1_l2(l1=1e-5, l2=1e-4),
                             bias_regularizer=regularizers.l2(1e-4),
