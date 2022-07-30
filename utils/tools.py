@@ -257,3 +257,10 @@ def mix_up(ds_one, ds_two, alpha=0.2):
     images = images_one * x_l + images_two * (1 - x_l)
     labels = labels_one * y_l + labels_two * (1 - y_l)
     return (images, labels)
+
+def convert_fft(x, n=64653):
+  data_fft = []
+  for i in x:
+    t = np.fft.fft(i, n=n)
+    data_fft.append(abs(t))
+  return np.array(data_fft)
