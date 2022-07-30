@@ -27,7 +27,7 @@ parser.add_argument('--fft_length', default = 64653, type=int, help='length of f
 parser.add_argument('--batch_size', default = 16, type=int, help='bacth size')
 parser.add_argument('--epochs', default = 100, type=int, help='epochs')
 parser.add_argument('--load_weight', default = False, type=bool, help='load weight')
-parser.add_argument('--model_name', type=str, help='names of model: EfficientNetV2M, MobileNetV2, InceptionResNetV2, ResNet152V2')
+parser.add_argument('--model_name', type=str, help='names of model: EfficientNetV2M, MobileNetV2, InceptionResNetV2, ResNet152V2, Model_1D2D')
 
 parser.add_argument('--save_data_dir', type=str, help='data directory: x/x/')
 parser.add_argument('--data_dir', type=str, help='data directory: x/x/ICBHI_final_database')
