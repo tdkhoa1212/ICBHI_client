@@ -7,7 +7,7 @@ from tensorflow.keras.layers import Conv1D, Activation, Dense, concatenate, Batc
 def CNN_1D_2D_model(image_length=224, fft_length=64653, training=False):
     ################# CNN 2D ################################
     input_2D = Input(shape=(image_length, image_length, 1))
-    base_model_2D = tf.keras.applications.InceptionResNetV2(include_top=False,
+    base_model_2D = tf.keras.applications.EfficientNetV2M(include_top=False,
                                                             input_shape=(image_length, image_length, 1),
                                                             weights=None)
     model_2D = base_model_2D(input_2D, training=training)
