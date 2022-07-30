@@ -203,7 +203,8 @@ def train(args):
     name = 'model_' + args.model_name + '_' + args.based_image + '.h5'
     if args.load_weight:
       model.load_weights(os.path.join(args.model_path, name))
-    model.compile(optimizer=tf.keras.optimizers.RMSprop(1e-4), loss='categorical_crossentropy', metrics=['acc', sensitivity, specificity, average_score, harmonic_mean]) 
+    # tf.keras.optimizers.RMSprop(1e-4)
+    model.compile(optimizer=tf.keras.optimizers.Adam(1e-4), loss='categorical_crossentropy', metrics=['acc', sensitivity, specificity, average_score, harmonic_mean]) 
     model.summary()
     if args.train:
         history = model.fit(train_ds_mu,
