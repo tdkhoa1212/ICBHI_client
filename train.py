@@ -204,7 +204,7 @@ def train(args):
     #-------------------------- MIXUP --------------------------------------------------------------------
     train_ds_one = (image_train_data, train_fft, train_label)
     train_ds_two = (image_train_data, train_fft, train_label)
-    train_ds_mu = mix_up(ds_one, ds_two, alpha=0.3)
+    train_ds_mu = mix_up(train_ds_one, train_ds_two, alpha=0.3)
     
     # load neural network model
     if args.model_name == 'EfficientNetV2M':
