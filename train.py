@@ -10,11 +10,12 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from nets.CNN import EfficientNetV2M, MobileNetV2, InceptionResNetV2, ResNet152V2
+from nets.CNN_1D_2D import CNN_1D_2D
 from sklearn.model_selection import train_test_split
 from utils.tools import to_onehot, load_df, create_spectrograms_raw, \
                         get_annotations, get_sound_samples, save_df, sensitivity, \
                         specificity, average_score, harmonic_mean, \
-                        matrices, create_stft, mix_up
+                        matrices, create_stft, mix_up, convert_fft
 from sklearn.metrics import confusion_matrix, accuracy_score, ConfusionMatrixDisplay
 import progressbar
 
@@ -22,6 +23,7 @@ import progressbar
 parser = argparse.ArgumentParser(description='RespireNet: Lung Sound Classification')
 parser.add_argument('--lr', default = 1e-3, type=float, help='learning rate')
 parser.add_argument('--image_length', default = 224, type=int, help='height and width of image')
+parser.add_argument('--fft_length', default = 64653, type=int, help='length of frequency signal')
 parser.add_argument('--batch_size', default = 16, type=int, help='bacth size')
 parser.add_argument('--epochs', default = 100, type=int, help='epochs')
 parser.add_argument('--load_weight', default = False, type=bool, help='load weight')
@@ -174,6 +176,7 @@ def train(args):
           save_df(image_test_data, os.path.join(args.save_data_dir, 'stft_test_data.pkz'))
           save_df(image_train_data, os.path.join(args.save_data_dir, 'stft_train_data.pkz'))
 
+
     ######################## TRAIN PHASE ##################################################################
     print(f'\nShape of train data: {image_train_data.shape} \t {train_label.shape}')
     print(f'Shape of test data: {image_test_data.shape} \t {test_label.shape}\n')
@@ -183,12 +186,22 @@ def train(args):
 
     train_label = train_label.astype(np.float32)
     test_label = test_label.astype(np.float32)
+
+    # ---------------------------------Convert data to frequency by FFT------------------------------------
+    if os.path.exists(os.path.join(args.save_data_dir, 'train_fft.pkz')):
+      # Load stft data, if they exist
+      train_fft = load_df(os.path.join(args.save_data_dir, 'train_fft.pkz'))
+      test_fft = load_df(os.path.join(args.save_data_dir, 'test_fft.pkz'))
+    else:
+      train_fft = convert_fft(train_data)
+      test_fft = convert_fft(test_data)
+      save_df(train_fft, os.path.join(args.save_data_dir, 'train_fft.pkz'))
+      save_df(test_fft, os.path.join(args.save_data_dir, 'test_fft.pkz'))
     
     #-------------------------- MIXUP --------------------------------------------------------------------
-    train_ds_one = (tf.data.Dataset.from_tensor_slices((image_train_data, train_label)).shuffle(args.batch_size * 100).batch(args.batch_size))
-    train_ds_two = (tf.data.Dataset.from_tensor_slices((image_train_data, train_label)).shuffle(args.batch_size * 100).batch(args.batch_size))
-    train_ds = tf.data.Dataset.zip((train_ds_one, train_ds_two))
-    train_ds_mu = train_ds.map(lambda ds_one, ds_two: mix_up(ds_one, ds_two, alpha=0.3), num_parallel_calls=tf.data.AUTOTUNE)
+    train_ds_one = (image_train_data, train_fft, train_label)
+    train_ds_two = (image_train_data, train_fft, train_label)
+    train_ds_mu = mix_up(ds_one, ds_two, alpha=0.3)
     
     # load neural network model
     if args.model_name == 'EfficientNetV2M':
@@ -199,6 +212,8 @@ def train(args):
       model = InceptionResNetV2(args.image_length, True)
     if args.model_name == 'ResNet152V2':
       model = ResNet152V2(args.image_length, True)
+    if args.model_name == 'Model_1D2D':
+      model = CNN_1D_2D(args.image_length, args.fft_length, True)
 
     name = 'model_' + args.model_name + '_' + args.based_image + '.h5'
     if args.load_weight:
@@ -214,14 +229,17 @@ def train(args):
     
     ######################## TEST PHASE ##################################################################
     print('\n' + '-'*10 + 'Test phase' + '-'*10 + '\n') 
+    # load neural network model
     if args.model_name == 'EfficientNetV2M':
-      model = EfficientNetV2M(args.image_length, True)
+      model = EfficientNetV2M(args.image_length, False)
     if args.model_name == 'MobileNetV2':
-      model = MobileNetV2(args.image_length, True)
+      model = MobileNetV2(args.image_length, False)
     if args.model_name == 'InceptionResNetV2':
-      model = InceptionResNetV2(args.image_length, True)
+      model = InceptionResNetV2(args.image_length, False)
     if args.model_name == 'ResNet152V2':
-      model = ResNet152V2(args.image_length, True)
+      model = ResNet152V2(args.image_length, False)
+    if args.model_name == 'Model_1D2D':
+      model = CNN_1D_2D(args.image_length, args.fft_length, False)
     
     if args.predict:
         # outputs validation by matrices: sensitivity, specificity, average_score, harmonic_mean

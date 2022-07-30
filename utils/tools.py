@@ -241,26 +241,56 @@ def sample_beta_distribution(size, concentration_0=0.2, concentration_1=0.2):
     return gamma_1_sample / (gamma_1_sample + gamma_2_sample)
 
 
-def mix_up(ds_one, ds_two, alpha=0.2):
+def mix_up(ds_one, ds_two, alpha=0.2, batch_size_range=[8, 16, 32]):
     # Unpack two datasets
-    images_one, labels_one = ds_one
-    images_two, labels_two = ds_two
-    batch_size = tf.shape(images_one)[0]
+    images_one, ffts_one, labels_one = ds_one 
+    images_two, ffts_two, labels_two = ds_two
+    list_rand = list(range(len(labels_one)))
 
-    # Sample lambda and reshape it to do the mixup
-    l = sample_beta_distribution(batch_size, alpha, alpha)
-    x_l = tf.reshape(l, (batch_size, 1, 1, 1))
-    y_l = tf.reshape(l, (batch_size, 1))
+    # Random the first data
+    np.random.shuffle(list_rand)
+    images_one, ffts_one, labels_one = images_one[list_rand], ffts_one[list_rand], labels_one[list_rand]
 
-    # Perform mixup on both images and labels by combining a pair of images/labels
-    # (one from each dataset) into one image/label
-    images = images_one * x_l + images_two * (1 - x_l)
-    labels = labels_one * y_l + labels_two * (1 - y_l)
-    return (images, labels)
+    # Random the second data
+    np.random.shuffle(list_rand)
+    images_two, ffts_two, labels_two = images_two[list_rand], ffts_two[list_rand], labels_two[list_rand]
+
+
+
+    images_org, ffts_org, labels_org = ds_one 
+
+    for batch_size in batch_size_range:
+      num = int(len(labels_one)/batch_size + 1)
+      for i in range(num):
+        # Sample lambda and reshape it to do the mixup
+        l = sample_beta_distribution(batch_size, alpha, alpha)
+        x_l = tf.reshape(l, (batch_size, 1, 1, 1))
+        x_f = tf.reshape(l, (batch_size, 1))
+        y_l = tf.reshape(l, (batch_size, 1))
+
+        # Perform mixup on both images and labels by combining a pair of images/labels
+        # (one from each dataset) into one image/label
+        images_one_batch = images_one[i*batch_size: (i+1)*batch_size]
+        images_two_batch = images_two[i*batch_size: (i+1)*batch_size]
+
+        ffts_one_batch = ffts_one[i*batch_size: (i+1)*batch_size]
+        ffts_two_batch = ffts_two[i*batch_size: (i+1)*batch_size]
+
+        labels_one_batch = labels_one[i*batch_size: (i+1)*batch_size]
+        labels_two_batch = labels_two[i*batch_size: (i+1)*batch_size]
+
+        images = images_one_batch*x_l + images_two_batch*(1 - x_l)
+        ffts   = ffts_one_batch  *x_f + ffts_two_batch  *(1 - x_f)
+        labels = labels_one_batch*y_l + labels_two_batch*(1 - y_l)
+
+        images_org = np.concatenate((images_org, images), axis=0)
+        ffts_org = np.concatenate((ffts_org, ffts), axis=0)
+        labels_org = np.concatenate((labels_org, labels), axis=0)
+    return ([images_org, ffts_org], labels_org)
 
 def convert_fft(x, n=64653):
   data_fft = []
   for i in x:
     t = np.fft.fft(i, n=n)
     data_fft.append(abs(t))
-  return np.array(data_fft)
+  return np.expand_dims(data_fft, -1)
