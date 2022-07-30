@@ -72,7 +72,7 @@ def load_df(pkz_file):
 # save .pkz file
 def save_df(df, out_file):
   with open(out_file, 'wb') as pfile:
-    pkl.dump(df, pfile)
+    pkl.dump(df, pfile, protocol=4)
     print('{0} saved'.format(out_file))
 
 # convert labels to one-hot type
