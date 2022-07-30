@@ -198,16 +198,21 @@ def train(args):
       save_df(test_fft, os.path.join(args.save_data_dir, 'test_fft.pkz'))
 
     print(f'\nShape of 1D training data{train_fft.shape}')
-    print(f'Shape of 1D test data{test_fft.shape}')
+    print(f'Shape of 1D test data{test_fft.shape}\n')
     
     #-------------------------- MIXUP --------------------------------------------------------------------
-    if os.path.exists(os.path.join(args.save_data_dir, 'train_ds_mu.pkz')):
-      train_ds_mu = load_df(os.path.join(args.save_data_dir, 'train_ds_mu.pkz'))
+    if os.path.exists(os.path.join(args.save_data_dir, 'images_org.pkz')):
+      train_ds_mu = load_df(os.path.join(args.save_data_dir, 'images_org.pkz'))
     else:
       train_ds_one = (image_train_data, train_fft, train_label)
       train_ds_two = (image_train_data, train_fft, train_label)
-      train_ds_mu = mix_up(train_ds_one, train_ds_two)
-      save_df(train_fft, os.path.join(args.save_data_dir, 'train_ds_mu.pkz'))
+      images_org, ffts_org, labels_org = mix_up(train_ds_one, train_ds_two)
+      save_df(images_org, os.path.join(args.save_data_dir, 'images_org.pkz'))
+      save_df(ffts_org, os.path.join(args.save_data_dir, 'ffts_org.pkz'))
+      save_df(labels_org, os.path.join(args.save_data_dir, 'labels_org.pkz'))
+
+
+    print(f'\nShape of 1D MIXUP training data: {images_org.shape}, {ffts_org.shape}, {labels_org.shape}\n')
     
     # load neural network model
     if args.model_name == 'EfficientNetV2M':
@@ -228,7 +233,7 @@ def train(args):
     model.compile(optimizer=tf.keras.optimizers.Adam(1e-4), loss='categorical_crossentropy', metrics=['acc', sensitivity, specificity, average_score, harmonic_mean]) 
     model.summary()
     if args.train:
-        history = model.fit(train_ds_mu,
+        history = model.fit([images_org, ffts_org], labels_org,
                             epochs     = args.epochs,
                             batch_size = args.batch_size,)
         model.save(os.path.join(args.model_path, name))

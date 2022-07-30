@@ -286,7 +286,7 @@ def mix_up(ds_one, ds_two, alpha=[0.1, 0.2, 0.3], batch_size_range=[8, 16, 32]):
         images_org = np.concatenate((images_org, images), axis=0)
         ffts_org = np.concatenate((ffts_org, ffts), axis=0)
         labels_org = np.concatenate((labels_org, labels), axis=0)
-    return ([images_org, ffts_org], labels_org)
+    return images_org, ffts_org, labels_org
 
 def convert_fft(x, n=64653):
   data_fft = []

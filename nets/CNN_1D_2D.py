@@ -19,7 +19,8 @@ def CNN_1D_2D_model(image_length=224, fft_length=64653, training=False):
                             activity_regularizer=regularizers.l2(1e-5))(output_2D)
 
     ################# CNN 1D ################################
-    base_model_1D = cnn_1d_model(fft_length, training=training)
+    input_1D = Input(shape=(fft_length, 1))
+    base_model_1D = cnn_1d_model(fft_length, )
     output_1D = base_model_1D([input_1D])
     output_1D = Dense(1024, activation=ReLU(), 
                             kernel_regularizer=regularizers.l1_l2(l1=1e-5, l2=1e-4),
@@ -31,6 +32,10 @@ def CNN_1D_2D_model(image_length=224, fft_length=64653, training=False):
     output = BatchNormalization()(output, training=training)
     output = Activation('relu')(output)
     output = Dropout(0.1)(output, training=training)
+    output = Dense(4, activation=ReLU(), 
+                            kernel_regularizer=regularizers.l1_l2(l1=1e-5, l2=1e-4),
+                            bias_regularizer=regularizers.l2(1e-4),
+                            activity_regularizer=regularizers.l2(1e-5))(output)
 
     network = Model(inputs=[input_2D, input_1D], outputs=output)
     return network
