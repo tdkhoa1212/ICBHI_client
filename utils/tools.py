@@ -241,7 +241,7 @@ def sample_beta_distribution(size, concentration_0=0.2, concentration_1=0.2):
     return gamma_1_sample / (gamma_1_sample + gamma_2_sample)
 
 
-def mix_up(ds_one, ds_two, alpha=0.2, batch_size_range=[8, 16, 32]):
+def mix_up(ds_one, ds_two, alpha=[0.1, 0.2, 0.3], batch_size_range=[8, 16, 32]):
     # Unpack two datasets
     images_one, ffts_one, labels_one = ds_one 
     images_two, ffts_two, labels_two = ds_two
@@ -259,11 +259,11 @@ def mix_up(ds_one, ds_two, alpha=0.2, batch_size_range=[8, 16, 32]):
 
     images_org, ffts_org, labels_org = ds_one 
 
-    for batch_size in batch_size_range:
+    for idx, batch_size in enumerate(batch_size_range):
       num = int(len(labels_one)/batch_size + 1)
       for i in range(num):
         # Sample lambda and reshape it to do the mixup
-        l = sample_beta_distribution(batch_size, alpha, alpha)
+        l = sample_beta_distribution(batch_size, alpha[idx], alpha[idx])
         x_l = tf.reshape(l, (batch_size, 1, 1, 1))
         x_f = tf.reshape(l, (batch_size, 1, 1))
         y_l = tf.reshape(l, (batch_size, 1))

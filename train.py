@@ -206,7 +206,7 @@ def train(args):
     else:
       train_ds_one = (image_train_data, train_fft, train_label)
       train_ds_two = (image_train_data, train_fft, train_label)
-      train_ds_mu = mix_up(train_ds_one, train_ds_two, alpha=0.3)
+      train_ds_mu = mix_up(train_ds_one, train_ds_two)
       save_df(train_fft, os.path.join(args.save_data_dir, 'train_ds_mu.pkz'))
     
     # load neural network model
