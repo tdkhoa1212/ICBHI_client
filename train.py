@@ -10,7 +10,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from nets.CNN import EfficientNetV2M, MobileNetV2, InceptionResNetV2, ResNet152V2
-from nets.CNN_1D_2D import CNN_1D_2D
+from nets.CNN_1D_2D import CNN_1D_2D_model
 from sklearn.model_selection import train_test_split
 from utils.tools import to_onehot, load_df, create_spectrograms_raw, \
                         get_annotations, get_sound_samples, save_df, sensitivity, \
@@ -27,7 +27,7 @@ parser.add_argument('--fft_length', default = 64653, type=int, help='length of f
 parser.add_argument('--batch_size', default = 16, type=int, help='bacth size')
 parser.add_argument('--epochs', default = 100, type=int, help='epochs')
 parser.add_argument('--load_weight', default = False, type=bool, help='load weight')
-parser.add_argument('--model_name', type=str, help='names of model: EfficientNetV2M, MobileNetV2, InceptionResNetV2, ResNet152V2, Model_1D2D')
+parser.add_argument('--model_name', type=str, help='names of model: EfficientNetV2M, MobileNetV2, InceptionResNetV2, ResNet152V2')
 
 parser.add_argument('--save_data_dir', type=str, help='data directory: x/x/')
 parser.add_argument('--data_dir', type=str, help='data directory: x/x/ICBHI_final_database')
@@ -197,6 +197,9 @@ def train(args):
       test_fft = convert_fft(test_data)
       save_df(train_fft, os.path.join(args.save_data_dir, 'train_fft.pkz'))
       save_df(test_fft, os.path.join(args.save_data_dir, 'test_fft.pkz'))
+
+    print(f'\nShape of 1D training data{train_fft}')
+    print(f'Shape of 1D test data{test_fft}')
     
     #-------------------------- MIXUP --------------------------------------------------------------------
     train_ds_one = (image_train_data, train_fft, train_label)
@@ -213,7 +216,7 @@ def train(args):
     if args.model_name == 'ResNet152V2':
       model = ResNet152V2(args.image_length, True)
     if args.model_name == 'Model_1D2D':
-      model = CNN_1D_2D(args.image_length, args.fft_length, True)
+      model = CNN_1D_2D_model(args.image_length, args.fft_length, True)
 
     name = 'model_' + args.model_name + '_' + args.based_image + '.h5'
     if args.load_weight:
@@ -239,7 +242,7 @@ def train(args):
     if args.model_name == 'ResNet152V2':
       model = ResNet152V2(args.image_length, False)
     if args.model_name == 'Model_1D2D':
-      model = CNN_1D_2D(args.image_length, args.fft_length, False)
+      model = CNN_1D_2D_model(args.image_length, args.fft_length, False)
     
     if args.predict:
         # outputs validation by matrices: sensitivity, specificity, average_score, harmonic_mean

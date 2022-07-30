@@ -1,9 +1,9 @@
-from CNN_1D import cnn_1d_model
+from nets.CNN_1D import cnn_1d_model
 from tensorflow import keras
 from tensorflow.keras.layers import Conv1D, Activation, Dense, concatenate, BatchNormalization, GlobalAveragePooling1D, Input, MaxPooling1D, Lambda, GlobalAveragePooling2D, ReLU, MaxPooling2D, Flatten, Dropout, LSTM
 
 
-def CNN_1D_2D(image_length=224, fft_length=64653, training=False):
+def CNN_1D_2D_model(image_length=224, fft_length=64653, training=False):
     ################# CNN 2D ################################
     input_2D = Input(shape=(image_length, image_length, 1))
     base_model_2D = tf.keras.applications.InceptionResNetV2(include_top=False,
