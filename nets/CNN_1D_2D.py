@@ -1,5 +1,6 @@
 from nets.CNN_1D import cnn_1d_model
 import tensorflow as tf
+from tensorflow.keras import Model
 from tensorflow.keras.layers import Conv1D, Activation, Dense, concatenate, BatchNormalization, GlobalAveragePooling1D, Input, MaxPooling1D, Lambda, GlobalAveragePooling2D, ReLU, MaxPooling2D, Flatten, Dropout, LSTM
 
 
