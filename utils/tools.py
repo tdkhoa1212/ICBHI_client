@@ -266,7 +266,7 @@ def mix_up(ds_one, ds_two, alpha=0.2, batch_size_range=[8, 16, 32]):
         l = sample_beta_distribution(batch_size, alpha, alpha)
         x_l = tf.reshape(l, (batch_size, 1, 1, 1))
         x_f = tf.reshape(l, (batch_size, 1, 1))
-        y_l = tf.reshape(l, (batch_size, 1, 1))
+        y_l = tf.reshape(l, (batch_size, 1))
 
         # Perform mixup on both images and labels by combining a pair of images/labels
         # (one from each dataset) into one image/label
