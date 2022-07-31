@@ -234,7 +234,12 @@ def train(args):
     model.compile(optimizer=tf.keras.optimizers.Adam(1e-4), loss='categorical_crossentropy', metrics=['acc', sensitivity, specificity, average_score, harmonic_mean]) 
     model.summary()
     if args.train:
+      if args.model_name == 'Model_1D2D':
         history = model.fit([images_org, ffts_org], labels_org,
+                            epochs     = args.epochs,
+                            batch_size = args.batch_size,)
+      else:
+        history = model.fit(image_train_data, train_label,
                             epochs     = args.epochs,
                             batch_size = args.batch_size,)
         model.save(os.path.join(args.model_path, name))
@@ -256,7 +261,10 @@ def train(args):
     if args.predict:
         # outputs validation by matrices: sensitivity, specificity, average_score, harmonic_mean
         model.load_weights(os.path.join(args.model_path, name))
-        pred_label = model.predict([image_test_data, test_fft])
+        if args.model_name == 'Model_1D2D':
+          pred_label = model.predict([image_test_data, test_fft])
+        else:
+          pred_label = model.predict(image_test_data)
         
         # Load matrices from predict data
         test_acc,  test_sensitivity,  test_specificity,  test_average_score, test_harmonic_mean  = matrices(test_label, pred_label)
