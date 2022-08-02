@@ -242,7 +242,7 @@ def train(args):
         history = model.fit(image_train_data, train_label,
                             epochs     = args.epochs,
                             batch_size = args.batch_size,)
-        model.save(os.path.join(args.model_path, name))
+      model.save(os.path.join(args.model_path, name))
     
     ######################## TEST PHASE ##################################################################
     print('\n' + '-'*10 + 'Test phase' + '-'*10 + '\n') 
