@@ -229,6 +229,7 @@ def train(args):
 
     name = 'model_' + args.model_name + '_' + args.based_image + '.h5'
     if args.load_weight:
+      print(f'\nLoad weight file from {os.path.join(args.model_path, name)}\n')
       model.load_weights(os.path.join(args.model_path, name))
     # tf.keras.optimizers.RMSprop(1e-4)
     model.compile(optimizer=tf.keras.optimizers.Adam(1e-4), loss=tf.keras.losses.CategoricalCrossentropy(), metrics=['acc', sensitivity, specificity, average_score, harmonic_mean]) 
@@ -245,7 +246,7 @@ def train(args):
     if args.train:
       print(f'\nSave weight file to {os.path.join(args.model_path, name)}')
       model.save(os.path.join(args.model_path, name))
-    
+      
     ######################## TEST PHASE ##################################################################
     print('\n' + '-'*10 + 'Test phase' + '-'*10 + '\n') 
     # load neural network model
