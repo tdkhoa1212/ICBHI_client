@@ -29,7 +29,7 @@ def CNN_1D_2D_model(image_length=224, fft_length=64653, training=False):
 #                             activity_regularizer=regularizers.l2(1e-5))(output_1D)
 
     ################# CNN 1D vs 2D ################################
-    output = concatenate((output_1D, output_2D))
+    output = output_1D + output_2D
     output = BatchNormalization()(output, training=training)
     output = Activation('relu')(output)
     output = Dropout(0.1)(output, training=training)
