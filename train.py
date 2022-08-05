@@ -15,7 +15,7 @@ from sklearn.model_selection import train_test_split
 from utils.tools import to_onehot, load_df, create_spectrograms_raw, \
                         get_annotations, get_sound_samples, save_df, sensitivity, \
                         specificity, average_score, harmonic_mean, \
-                        matrices, create_stft, mix_up, convert_fft
+                        matrices, create_stft, mix_up, convert_fft, power_spectrum
 from sklearn.metrics import confusion_matrix, accuracy_score, ConfusionMatrixDisplay
 import progressbar
 
@@ -192,8 +192,8 @@ def train(args):
       train_fft = load_df(os.path.join(args.save_data_dir, 'train_fft.pkz'))
       test_fft = load_df(os.path.join(args.save_data_dir, 'test_fft.pkz'))
     else:
-      train_fft = convert_fft(train_data)
-      test_fft = convert_fft(test_data)
+      train_fft = power_spectrum(train_data, num=arg.fft_length)
+      test_fft = power_spectrum(test_data, num=arg.fft_length)
       save_df(train_fft, os.path.join(args.save_data_dir, 'train_fft.pkz'))
       save_df(test_fft, os.path.join(args.save_data_dir, 'test_fft.pkz'))
 
