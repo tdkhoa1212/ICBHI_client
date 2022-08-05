@@ -23,12 +23,9 @@ def power_spectrum(signals, num = 64653):
     out = np.expand_dims(abs(PSD), axis=-1)
 
     scaler = StandardScaler()   
-    out_scaled = np.expand_dims(scaler.fit_transform(out), axis=0)
-    if all_data == []:
-      all_data =  out_scaled
-    else:
-      all_data = np.concatenate((all_data, out_scaled))
-  return all_data
+    out_scaled = scaler.fit_transform(out)
+    all_data.append(out_scaled)
+  return np.array(all_data)
 
 
 def scaler_transform(signals):
