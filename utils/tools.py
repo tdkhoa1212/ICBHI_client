@@ -8,11 +8,28 @@ import tensorflow as tf
 import matplotlib.pyplot as plt
 import librosa
 import cv2
+from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import confusion_matrix, accuracy_score
 
 import pickle as pkl
 from keras import backend as K
+
+def power_spectrum(signals, num = 64653):
+  all_data = []
+  for signal in signals:
+    fhat = np.fft.fft(signal, num) 
+    PSD = fhat * np.conj(fhat) / num  
+    out = np.expand_dims(abs(PSD), axis=-1)
+
+    scaler = StandardScaler()   
+    out_scaled = np.expand_dims(scaler.fit_transform(out), axis=0)
+    if all_data == []:
+      all_data =  out_scaled
+    else:
+      all_data = np.concatenate((all_data, out_scaled))
+  return all_data
+
 
 def scaler_transform(signals):
   data = []
