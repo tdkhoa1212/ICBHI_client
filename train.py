@@ -192,8 +192,8 @@ def train(args):
       train_fft = load_df(os.path.join(args.save_data_dir, 'train_fft.pkz'))
       test_fft = load_df(os.path.join(args.save_data_dir, 'test_fft.pkz'))
     else:
-      train_fft = power_spectrum(train_data, num=arg.fft_length)
-      test_fft = power_spectrum(test_data, num=arg.fft_length)
+      train_fft = power_spectrum(train_data, num=args.fft_length)
+      test_fft = power_spectrum(test_data, num=args.fft_length)
       save_df(train_fft, os.path.join(args.save_data_dir, 'train_fft.pkz'))
       save_df(test_fft, os.path.join(args.save_data_dir, 'test_fft.pkz'))
 
