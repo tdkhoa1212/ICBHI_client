@@ -50,7 +50,7 @@ def cnn_1d_model(input_shape, training=None):
     https://github.com/philipperemy/very-deep-convnets-raw-waveforms/blob/master/model_resnet.py
     '''
     inputs = Input(shape=[input_shape, 1])
-    x = Conv1D(48,
+    x = Conv1D(64,
                kernel_size=80,
                strides=4,
                padding='same',
@@ -62,22 +62,22 @@ def cnn_1d_model(input_shape, training=None):
 
 
     for i in range(3):
-        x = identity_block(x, kernel_size=3, filters=48, stage=1, block=i, training=training)
+        x = identity_block(x, kernel_size=3, filters=64, stage=1, block=i, training=training)
 
     x = MaxPooling1D(pool_size=4, strides=None)(x)
 
     for i in range(4):
-        x = identity_block(x, kernel_size=3, filters=96, stage=2, block=i, training=training)
+        x = identity_block(x, kernel_size=3, filters=128, stage=2, block=i, training=training)
 
     x = MaxPooling1D(pool_size=4, strides=None)(x)
 
     for i in range(23):
-        x = identity_block(x, kernel_size=3, filters=192, stage=3, block=i, training=training)
+        x = identity_block(x, kernel_size=3, filters=256, stage=3, block=i, training=training)
 
     x = MaxPooling1D(pool_size=4, strides=None)(x)
 
     for i in range(3):
-        x = identity_block(x, kernel_size=3, filters=384, stage=4, block=i, training=training)
-    x = GlobalAveragePooling1D()(x)
+        x = identity_block(x, kernel_size=3, filters=512, stage=4, block=i, training=training)
+    x = tf.keras.layers.Bidirectional(LSTM(units=512, return_sequences=False))(x)
     m_1 = Model(inputs, x)
     return m_1
