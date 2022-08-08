@@ -232,7 +232,7 @@ def train(args):
       print(f'\nLoad weight file from {os.path.join(args.model_path, name)}\n')
       model.load_weights(os.path.join(args.model_path, name))
     # tf.keras.optimizers.RMSprop(1e-4)
-    model.compile(optimizer=tf.keras.optimizers.Adam(1e-4), loss=tf.keras.losses.CategoricalCrossentropy(), metrics=['acc', sensitivity, specificity, average_score, harmonic_mean]) 
+    model.compile(optimizer=tf.keras.optimizers.Adam(1e-4), loss=tf.keras.losses.LogCosh(reduction=tf.keras.losses.Reduction.SUM), metrics=['acc', sensitivity, specificity, average_score, harmonic_mean]) 
     model.summary()
     if args.train:
       if args.model_name == 'Model_1D2D':
