@@ -228,7 +228,7 @@ def train(args):
     # tf.keras.losses.LogCosh(reduction=tf.keras.losses.Reduction.SUM)
     model.compile(optimizer=tf.keras.optimizers.RMSprop(1e-4), loss='categorical_crossentropy', metrics=['acc', sensitivity, specificity, average_score, harmonic_mean]) 
     model.summary()
-    callback = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=3)
+    callback = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=2)
     if args.train:
       if args.model_name == 'Model_1D2D':
         history = model.fit([images_org, ffts_org], labels_org,
