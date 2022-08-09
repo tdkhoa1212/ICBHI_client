@@ -19,7 +19,7 @@ def power_spectrum(signals, num = 64653):
   all_data = []
   for signal in signals:
     fhat = np.fft.fft(signal, num) 
-    PSD = fhat * np.conj(fhat) / num  
+    PSD = fhat * np.conj(fhat) 
     out = np.expand_dims(abs(PSD), axis=-1)
 
     scaler = MinMaxScaler()   
