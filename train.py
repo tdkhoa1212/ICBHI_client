@@ -233,7 +233,7 @@ def train(args):
                             epochs     = args.epochs,
                             batch_size = args.batch_size,
                             validation_data = ([image_test_data, test_fft], test_label),
-                            , callbacks=[callback])
+                            callbacks=[callback])
       else:
         history = model.fit(image_train_data, train_label,
                             epochs     = args.epochs,
