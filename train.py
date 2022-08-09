@@ -226,17 +226,20 @@ def train(args):
     # tf.keras.optimizers.RMSprop(1e-4)
     model.compile(optimizer=tf.keras.optimizers.Adam(1e-4), loss=tf.keras.losses.LogCosh(reduction=tf.keras.losses.Reduction.SUM), metrics=['acc', sensitivity, specificity, average_score, harmonic_mean]) 
     model.summary()
+    callback = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=3)
     if args.train:
       if args.model_name == 'Model_1D2D':
         history = model.fit([images_org, ffts_org], labels_org,
                             epochs     = args.epochs,
                             batch_size = args.batch_size,
-                            validation_data = ([image_test_data, test_fft], test_label))
+                            validation_data = ([image_test_data, test_fft], test_label),
+                            , callbacks=[callback])
       else:
         history = model.fit(image_train_data, train_label,
                             epochs     = args.epochs,
                             batch_size = args.batch_size,
-                            validation_data = (image_test_data, test_label))
+                            validation_data = (image_test_data, test_label), 
+                            callbacks=[callback])
     if args.train:
       print(f'\nSave weight file to {os.path.join(args.model_path, name)}')
       model.save(os.path.join(args.model_path, name))
