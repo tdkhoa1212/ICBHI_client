@@ -201,17 +201,9 @@ def train(args):
     print(f'Shape of 1D test data{test_fft.shape}\n')
     
     #-------------------------- MIXUP --------------------------------------------------------------------
-#     if os.path.exists(os.path.join(args.save_data_dir, 'images_org.pkz')):
-#       images_org = load_df(os.path.join(args.save_data_dir, 'images_org.pkz'))
-#       ffts_org = load_df(os.path.join(args.save_data_dir, 'ffts_org.pkz'))
-#       labels_org = load_df(os.path.join(args.save_data_dir, 'labels_org.pkz'))
-#     else:
     train_ds_one = (image_train_data, train_fft, train_label)
     train_ds_two = (image_train_data, train_fft, train_label)
     images_org, ffts_org, labels_org = mix_up(train_ds_one, train_ds_two)
-#       save_df(images_org, os.path.join(args.save_data_dir, 'images_org.pkz'))
-#       save_df(ffts_org, os.path.join(args.save_data_dir, 'ffts_org.pkz'))
-#       save_df(labels_org, os.path.join(args.save_data_dir, 'labels_org.pkz'))
 
 
     print(f'\nShape of 1D MIXUP training data: {images_org.shape}, {ffts_org.shape}, {labels_org.shape}\n')
@@ -238,11 +230,13 @@ def train(args):
       if args.model_name == 'Model_1D2D':
         history = model.fit([images_org, ffts_org], labels_org,
                             epochs     = args.epochs,
-                            batch_size = args.batch_size,)
+                            batch_size = args.batch_size,
+                            validation_data = ([image_test_data, test_fft], test_label))
       else:
         history = model.fit(image_train_data, train_label,
                             epochs     = args.epochs,
-                            batch_size = args.batch_size,)
+                            batch_size = args.batch_size,
+                            validation_data = (image_test_data, test_label))
     if args.train:
       print(f'\nSave weight file to {os.path.join(args.model_path, name)}')
       model.save(os.path.join(args.model_path, name))
