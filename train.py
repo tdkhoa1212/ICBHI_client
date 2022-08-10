@@ -226,7 +226,7 @@ def train(args):
     # tf.keras.optimizers.RMSprop(1e-4)
     # tf.keras.optimizers.Adam(1e-4)
     # tf.keras.losses.LogCosh(reduction=tf.keras.losses.Reduction.SUM)
-    model.compile(optimizer=tf.keras.optimizers.RMSprop(1e-4), loss='categorical_crossentropy', metrics=['acc', sensitivity, specificity, average_score, harmonic_mean]) 
+    model.compile(optimizer=tf.keras.optimizers.Adam(1e-4), loss=tf.keras.losses.LogCosh(reduction=tf.keras.losses.Reduction.SUM), metrics=['acc', sensitivity, specificity, average_score, harmonic_mean]) 
     model.summary()
     callback = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=2)
     if args.train:
