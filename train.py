@@ -10,7 +10,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from nets.CNN import EfficientNetV2M, MobileNetV2, InceptionResNetV2, ResNet152V2
-from nets.CNN_1D_2D import CNN_1D_2D_model
+from nets.CNN_1D_2D import mix_model
 from sklearn.model_selection import train_test_split
 from utils.tools import to_onehot, load_df, create_spectrograms_raw, \
                         get_annotations, get_sound_samples, save_df, sensitivity, \
@@ -189,7 +189,7 @@ def train(args):
     test_label = test_label.astype(np.float32)
     
     # ---------------------------------1D data process------------------------------------
-    if args.type_1D == 'PSD'
+    if args.type_1D == 'PSD':
       print('1D data in PSD form' + '-'*10)
       if os.path.exists(os.path.join(args.save_data_dir, 'train_fft.pkz')):
         train_fft = load_df(os.path.join(args.save_data_dir, 'train_fft.pkz'))
