@@ -318,3 +318,25 @@ def convert_fft(x, n=64653):
     t = np.fft.fft(i, n=n)
     data_fft.append(abs(t))
   return np.expand_dims(data_fft, -1)
+
+def scaler_signal(signals):
+  data = []
+  scaler = MinMaxScaler()   
+  for signal in signals:
+    sig = scaler.fit_transform(signal.reshape(-1, 1))
+    sig = sig.reshape(-1, )
+    data.append(sig)
+  return data
+
+def arrange_data(signals, num=64653):
+  data = []
+  signals = scaler_signal(signals)
+  for signal in signals:
+    length = signal.shape[0]
+    if length < num:
+      signal = np.concatenate((signal, np.zeros(num - length, dtype=float)))
+    if length > num:
+      signal = signal[:num]
+    data.append(signal.tolist())
+  data = np.array(data)
+  return data
