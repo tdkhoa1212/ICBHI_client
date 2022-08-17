@@ -265,7 +265,7 @@ def sample_beta_distribution(size, concentration_0=0.2, concentration_1=0.2):
     return gamma_1_sample / (gamma_1_sample + gamma_2_sample)
 
 
-def mix_up(ds_one, ds_two, alpha=[0.15, 0.2, 0.175], batch_size_range=[1024, 1024, 1024]):
+def mix_up(ds_one, ds_two, alpha=[0.15, 0.2, 0.175], batch_size_range=[1024*5, 1024*5, 1024*5]):
     # Unpack two datasets
     images_one, ffts_one, labels_one = ds_one 
     images_two, ffts_two, labels_two = ds_two
@@ -278,9 +278,6 @@ def mix_up(ds_one, ds_two, alpha=[0.15, 0.2, 0.175], batch_size_range=[1024, 102
     # Random the second data
     np.random.shuffle(list_rand)
     images_two, ffts_two, labels_two = images_two[list_rand], ffts_two[list_rand], labels_two[list_rand]
-
-
-
     images_org, ffts_org, labels_org = ds_one 
 
     for idx, batch_size in enumerate(batch_size_range):
