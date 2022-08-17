@@ -15,7 +15,7 @@ from sklearn.model_selection import train_test_split
 from utils.tools import to_onehot, load_df, create_spectrograms_raw, \
                         get_annotations, get_sound_samples, save_df, sensitivity, \
                         specificity, average_score, harmonic_mean, \
-                        matrices, create_stft, mix_up, convert_fft, power_spectrum
+                        matrices, create_stft, mix_up, convert_fft, power_spectrum, arrange_data
 from sklearn.metrics import confusion_matrix, accuracy_score, ConfusionMatrixDisplay
 import progressbar
 
@@ -37,6 +37,7 @@ parser.add_argument('--train', type=bool, default=False, help='train mode')
 parser.add_argument('--predict', type=bool, default=False, help='predict mode')
 
 parser.add_argument('--based_image', type=str, default='mel', help='stft, mel')
+parser.add_argument('--type_1D', type=str, help='raw, PSD')
 args = parser.parse_args()
 
 def train(args):
@@ -186,16 +187,22 @@ def train(args):
 
     train_label = train_label.astype(np.float32)
     test_label = test_label.astype(np.float32)
-
-    # ---------------------------------Convert data to frequency by FFT------------------------------------
-    if os.path.exists(os.path.join(args.save_data_dir, 'train_fft.pkz')):
-      train_fft = load_df(os.path.join(args.save_data_dir, 'train_fft.pkz'))
-      test_fft = load_df(os.path.join(args.save_data_dir, 'test_fft.pkz'))
+    
+    # ---------------------------------1D data process------------------------------------
+    if args.type_1D == 'PSD'
+      print('1D data in PSD form' + '-'*10)
+      if os.path.exists(os.path.join(args.save_data_dir, 'train_fft.pkz')):
+        train_fft = load_df(os.path.join(args.save_data_dir, 'train_fft.pkz'))
+        test_fft = load_df(os.path.join(args.save_data_dir, 'test_fft.pkz'))
+      else:
+        train_fft = power_spectrum(train_data, num=args.fft_length)
+        test_fft = power_spectrum(test_data, num=args.fft_length)
+        save_df(train_fft, os.path.join(args.save_data_dir, 'train_fft.pkz'))
+        save_df(test_fft, os.path.join(args.save_data_dir, 'test_fft.pkz'))
     else:
-      train_fft = power_spectrum(train_data, num=args.fft_length)
-      test_fft = power_spectrum(test_data, num=args.fft_length)
-      save_df(train_fft, os.path.join(args.save_data_dir, 'train_fft.pkz'))
-      save_df(test_fft, os.path.join(args.save_data_dir, 'test_fft.pkz'))
+      print('1D data in raw form' + '-'*10)
+      train_fft = arrange_data(train_data, num=args.fft_length)
+      test_fft = arrange_data(test_data, num=args.fft_length)
 
     print(f'\nShape of 1D training data{train_fft.shape}')
     print(f'Shape of 1D test data{test_fft.shape}\n')
