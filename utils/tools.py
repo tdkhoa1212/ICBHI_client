@@ -15,27 +15,6 @@ from sklearn.metrics import confusion_matrix, accuracy_score
 import pickle as pkl
 from keras import backend as K
 
-def power_spectrum(signals, num = 64653):
-  all_data = []
-  for signal in signals:
-    fhat = np.fft.fft(signal, num) 
-    PSD = fhat * np.conj(fhat) 
-    out = np.expand_dims(abs(PSD), axis=-1)
-
-    scaler = MinMaxScaler()   
-    out_scaled = scaler.fit_transform(out)
-    all_data.append(out_scaled)
-  return np.array(all_data)
-
-
-def scaler_transform(signals):
-  data = []
-  scale = MinMaxScaler()
-  for signal in signals:
-    if len(signal.shape) < 2:
-      signal = np.expand_dims(signal, axis=-1)
-    data.append(scale.fit_transform(signal))
-  return np.array(data)
 
 # load data from start time to end time in each audio file
 def slice_data(start, end, raw_data, sample_rate):
@@ -316,6 +295,8 @@ def convert_fft(x, n=64653):
     data_fft.append(abs(t))
   return np.expand_dims(data_fft, -1)
 
+########################## 1D data process ######################################
+# --------------------------- raw form --------------------------- 
 def scaler_signal(signals):
   data = []
   scaler = MinMaxScaler()   
@@ -335,5 +316,28 @@ def arrange_data(signals, num=64653):
     if length > num:
       signal = signal[:num]
     data.append(signal.tolist())
-  data = np.array(data)
+  data = np.expand_dims(data, axis=-1)
   return data
+
+# --------------------------- PSD form --------------------------- 
+def power_spectrum(signals, num = 64653):
+  all_data = []
+  for signal in signals:
+    fhat = np.fft.fft(signal, num) 
+    PSD = fhat * np.conj(fhat) 
+    out = np.expand_dims(abs(PSD), axis=-1)
+
+    scaler = MinMaxScaler()   
+    out_scaled = scaler.fit_transform(out)
+    all_data.append(out_scaled)
+  return np.array(all_data)
+
+
+def scaler_transform(signals):
+  data = []
+  scale = MinMaxScaler()
+  for signal in signals:
+    if len(signal.shape) < 2:
+      signal = np.expand_dims(signal, axis=-1)
+    data.append(scale.fit_transform(signal))
+  return np.array(data)
