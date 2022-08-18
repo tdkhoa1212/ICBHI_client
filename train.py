@@ -24,7 +24,7 @@ parser = argparse.ArgumentParser(description='RespireNet: Lung Sound Classificat
 parser.add_argument('--lr', default = 1e-3, type=float, help='learning rate')
 parser.add_argument('--image_length', default = 224, type=int, help='height and width of image')
 parser.add_argument('--fft_length', default = 64653, type=int, help='length of frequency signal')
-parser.add_argument('--batch_size', default = 16, type=int, help='bacth size')
+parser.add_argument('--batch_size', default = 4, type=int, help='bacth size')
 parser.add_argument('--epochs', default = 100, type=int, help='epochs')
 parser.add_argument('--load_weight', default = False, type=bool, help='load weight')
 parser.add_argument('--model_name', type=str, help='names of model: EfficientNetV2M, MobileNetV2, InceptionResNetV2, ResNet152V2')
@@ -201,8 +201,14 @@ def train(args):
         save_df(test_fft, os.path.join(args.save_data_dir, 'test_fft.pkz'))
     else:
       print('1D data in raw form' + '-'*10)
-      train_fft = arrange_data(train_data, num=args.fft_length)
-      test_fft = arrange_data(test_data, num=args.fft_length)
+      if os.path.exists(os.path.join(args.save_data_dir, 'train_raw.pkz')):
+        train_fft = load_df(os.path.join(args.save_data_dir, 'train_raw.pkz'))
+        test_fft = load_df(os.path.join(args.save_data_dir, 'test_raw.pkz'))
+      else:
+        train_fft = arrange_data(train_data, num=args.fft_length)
+        test_fft = arrange_data(test_data, num=args.fft_length)
+        save_df(train_fft, os.path.join(args.save_data_dir, 'train_raw.pkz'))
+        save_df(test_fft, os.path.join(args.save_data_dir, 'test_raw.pkz'))
 
     print(f'\nShape of 1D training data{train_fft.shape}')
     print(f'Shape of 1D test data{test_fft.shape}\n')
@@ -242,13 +248,15 @@ def train(args):
                             epochs     = args.epochs,
                             batch_size = args.batch_size,
                             validation_data = ([image_test_data, test_fft], test_label),
-                            callbacks=[callback])
+                            # callbacks=[callback]
+                            )
       else:
         history = model.fit(image_train_data, train_label,
                             epochs     = args.epochs,
                             batch_size = args.batch_size,
                             validation_data = (image_test_data, test_label), 
-                            callbacks=[callback])
+                            # callbacks=[callback]
+                            )
     if args.train:
       print(f'\nSave weight file to {os.path.join(args.model_path, name)}')
       model.save(os.path.join(args.model_path, name))
