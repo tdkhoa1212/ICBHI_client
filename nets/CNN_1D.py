@@ -98,7 +98,7 @@ def cnn_1d_model(input_shape, training=None):
 
     for i in range(3):
         x = identity_block(x, kernel_size=3, filters=512, stage=4, block=i, training=training)
-    # x = tf.keras.layers.Bidirectional(LSTM(units=256, return_sequences=False, activation='relu'))(x)
-    x = TransformerLayer(x, 256, num_heads=4, training=None)
+    x = tf.keras.layers.Bidirectional(LSTM(units=256, return_sequences=False, activation='relu'))(x)
+#     x = TransformerLayer(x, 256, num_heads=4, training=None)
     m_1 = Model(inputs, x)
     return m_1
