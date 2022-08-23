@@ -28,7 +28,7 @@ def CNN_1D_2D_model(image_length=224, fft_length=64653, training=False):
     #                         kernel_regularizer=regularizers.l1_l2(l1=1e-5, l2=1e-4),
     #                         bias_regularizer=regularizers.l2(1e-4),
     #                         activity_regularizer=regularizers.l2(1e-5))(output_1D)
-#     output_1D = Dropout(0.1)(output_1D, training=training)
+    output_1D = Dropout(0.1)(output_1D, training=training)
 
     ################# CNN 1D vs 2D ################################
     # output = output_1D + output_2D
@@ -40,7 +40,7 @@ def CNN_1D_2D_model(image_length=224, fft_length=64653, training=False):
     #                     kernel_regularizer=regularizers.l1_l2(l1=1e-5, l2=1e-4),
     #                     bias_regularizer=regularizers.l2(1e-4),
     #                     activity_regularizer=regularizers.l2(1e-5))(output)
-    output = Dropout(0.1)(output, training=training)
+#     output = Dropout(0.1)(output, training=training)
     output = Dense(4, activation='softmax', 
                             kernel_regularizer=regularizers.l1_l2(l1=1e-5, l2=1e-4),
                             bias_regularizer=regularizers.l2(1e-4),
