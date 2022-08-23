@@ -98,12 +98,12 @@ def cnn_1d_model(input_shape, training=None):
 
     for i in range(3):
         x = identity_block(x, kernel_size=3, filters=512, stage=4, block=i, training=training)
-    x = Dense(512, activation=ReLU(), 
+    x = Dense(256, activation=ReLU(), 
                             kernel_regularizer=regularizers.l1_l2(l1=1e-5, l2=1e-4),
                             bias_regularizer=regularizers.l2(1e-4),
                             activity_regularizer=regularizers.l2(1e-5))(x)
-    x = Dropout(0.1)(x, training=training)
-    x = tf.keras.layers.Bidirectional(LSTM(units=512, return_sequences=False, activation='relu'))(x)
+    x = tf.keras.layers.Bidirectional(LSTM(units=256, return_sequences=False, activation='relu'))(x)
+    # x = Dropout(0.1)(x, training=training)
     # x = TransformerLayer(x, 256, num_heads=4, training=None)
     m_1 = Model(inputs, x)
     return m_1
