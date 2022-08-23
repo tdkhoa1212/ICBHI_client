@@ -103,7 +103,7 @@ def cnn_1d_model(input_shape, training=None):
                             bias_regularizer=regularizers.l2(1e-4),
                             activity_regularizer=regularizers.l2(1e-5))(x)
     x = tf.keras.layers.Bidirectional(LSTM(units=256, return_sequences=False, activation='relu'))(x)
-    # x = Dropout(0.1)(x, training=training)
+    x = Dropout(0.1)(x, training=training)
     # x = TransformerLayer(x, 256, num_heads=4, training=None)
     m_1 = Model(inputs, x)
     return m_1
