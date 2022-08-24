@@ -98,7 +98,7 @@ def cnn_1d_model(input_shape, training=None):
 
     for i in range(3):
         x = identity_block(x, kernel_size=3, filters=512, stage=4, block=i, training=training)
-    x = GlobalAveragePooling1D()(x) 
+#     x = GlobalAveragePooling1D()(x) 
 #     x = Dense(256, activation=ReLU(), 
 #                             kernel_regularizer=regularizers.l1_l2(l1=1e-5, l2=1e-4),
 #                             bias_regularizer=regularizers.l2(1e-4),
