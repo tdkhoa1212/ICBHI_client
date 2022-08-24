@@ -21,12 +21,13 @@ def TransformerLayer(x, c, num_heads=4, training=None):
                                      kernel_regularizer=regularizers.l1_l2(l1=1e-5, l2=1e-4),
                                      bias_regularizer=regularizers.l2(1e-4),
                                      activity_regularizer=regularizers.l2(1e-5))(ma) 
-    ma = tf.keras.layers.Dense(c,  activation='relu',
-                                     kernel_regularizer=regularizers.l1_l2(l1=1e-5, l2=1e-4),
-                                     bias_regularizer=regularizers.l2(1e-4),
-                                     activity_regularizer=regularizers.l2(1e-5))(ma) 
+#     ma = tf.keras.layers.Dense(c,  activation='relu',
+#                                      kernel_regularizer=regularizers.l1_l2(l1=1e-5, l2=1e-4),
+#                                      bias_regularizer=regularizers.l2(1e-4),
+#                                      activity_regularizer=regularizers.l2(1e-5))(ma) 
+#     ma = Dropout(0.1)(ma, training=training)
+    ma = tf.keras.layers.GRU(c, return_sequences=False, activation='relu')(ma)
     ma = Dropout(0.1)(ma, training=training)
-    ma = tf.keras.layers.GRU(c, return_sequences=False)(ma)
     return ma
 
 # For m34 Residual, use RepeatVector. Or tensorflow backend.repeat
@@ -103,8 +104,8 @@ def cnn_1d_model(input_shape, training=None):
 #                             kernel_regularizer=regularizers.l1_l2(l1=1e-5, l2=1e-4),
 #                             bias_regularizer=regularizers.l2(1e-4),
 #                             activity_regularizer=regularizers.l2(1e-5))(x)
-    x = tf.keras.layers.Bidirectional(LSTM(units=256, return_sequences=False, activation='relu'))(x)
+#     x = tf.keras.layers.Bidirectional(LSTM(units=256, return_sequences=False, activation='relu'))(x)
 #     x = Dropout(0.1)(x, training=training)
-    # x = TransformerLayer(x, 256, num_heads=4, training=None)
+    x = TransformerLayer(x, 512, num_heads=8, training=None)
     m_1 = Model(inputs, x)
     return m_1
