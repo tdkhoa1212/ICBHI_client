@@ -2,7 +2,13 @@ from functools import partial
 import keras
 import tensorflow as tf
 from tensorflow_addons.layers import MultiHeadAttention
-from tensorflow.keras.layers import LSTM, Conv1D, Activation, Dense, concatenate, BatchNormalization, GlobalAveragePooling1D, Input, MaxPooling1D, Lambda, GlobalAveragePooling2D, ReLU, MaxPooling2D, Flatten, Dropout
+from tensorflow.keras.layers import LSTM, Conv1D, \
+                                    Activation, Dense, concatenate, \
+                                    BatchNormalization, GlobalAveragePooling1D, \
+                                    Input, MaxPooling1D, Lambda, \
+                                    GlobalAveragePooling2D, ReLU, \
+                                    MaxPooling2D, Flatten, Dropout, \
+                                    AveragePooling1D
 import keras.backend as K
 from keras import layers, regularizers
 from keras.models import Model
@@ -10,10 +16,10 @@ from tensorflow.keras.applications import DenseNet121
 
 
 def TransformerLayer(x, c, num_heads=4, training=None):
-#     x = tf.keras.layers.Dense(c,  activation='relu',
-#                                   kernel_regularizer=regularizers.l1_l2(l1=1e-5, l2=1e-4),
-#                                   bias_regularizer=regularizers.l2(1e-4),
-#                                   activity_regularizer=regularizers.l2(1e-5))(x)
+    x = tf.keras.layers.Dense(c,  activation='relu',
+                                  kernel_regularizer=regularizers.l1_l2(l1=1e-5, l2=1e-4),
+                                  bias_regularizer=regularizers.l2(1e-4),
+                                  activity_regularizer=regularizers.l2(1e-5))(x)
 #     x = Dropout(0.1)(x, training=training)
     ma  = MultiHeadAttention(head_size=num_heads, num_heads=num_heads)([x, x, x]) 
     ma = BatchNormalization()(ma, training=training)
