@@ -24,7 +24,7 @@ def TransformerLayer(x, c, num_heads=4, training=None):
     ma = tf.keras.layers.Dense(c,  activation='relu',
                                      kernel_regularizer=regularizers.l1_l2(l1=1e-5, l2=1e-4),
                                      bias_regularizer=regularizers.l2(1e-4),
-                                     activity_regularizer=regularizers.l2(1e-5))(ma) 
+                                     activity_regularizer=regularizers.l2(1e-5))(ma) + x
 #     ma = Dropout(0.1)(ma, training=training)
     ma = LSTM(units=c, return_sequences=False, activation='relu', recurrent_dropout=0.2, unroll=True)(ma)
     # ma = Dropout(0.1)(ma, training=training)
