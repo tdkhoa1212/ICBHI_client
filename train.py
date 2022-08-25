@@ -239,7 +239,9 @@ def train(args):
     # tf.keras.optimizers.RMSprop(1e-4)
     # tf.keras.optimizers.Adam(1e-4)
     # tf.keras.losses.LogCosh(reduction=tf.keras.losses.Reduction.SUM)
-    model.compile(optimizer=tf.keras.optimizers.Adam(1e-4), loss=tf.keras.losses.LogCosh(reduction=tf.keras.losses.Reduction.SUM), metrics=['acc', sensitivity, specificity, average_score, harmonic_mean]) 
+    model.compile(optimizer=tf.keras.optimizers.Adam(1e-4), 
+                  loss=tf.keras.losses.LogCosh(reduction=tf.keras.losses.Reduction.SUM), 
+                  metrics=['acc', sensitivity, specificity, average_score, harmonic_mean]) 
     model.summary()
     callback = tf.keras.callbacks.EarlyStopping(monitor='val_acc', patience=1)
     if args.train:
@@ -248,14 +250,14 @@ def train(args):
                             epochs     = args.epochs,
                             batch_size = args.batch_size,
                             validation_data = ([image_test_data, test_fft], test_label),
-                            callbacks=[callback]
+                            # callbacks=[callback]
                             )
       else:
         history = model.fit(image_train_data, train_label,
                             epochs     = args.epochs,
                             batch_size = args.batch_size,
                             validation_data = (image_test_data, test_label), 
-                            callbacks=[callback]
+                            # callbacks=[callback]
                             )
     if args.train:
       print(f'\nSave weight file to {os.path.join(args.model_path, name)}')
