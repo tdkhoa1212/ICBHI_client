@@ -27,7 +27,7 @@ def TransformerLayer(x, c, num_heads=4, training=None):
                                      activity_regularizer=regularizers.l2(1e-5))(ma) 
 #     ma = Dropout(0.1)(ma, training=training)
     ma = LSTM(units=c, return_sequences=False, activation='relu', recurrent_dropout=0.2, unroll=True)(ma)
-    ma = Dropout(0.1)(ma, training=training)
+    # ma = Dropout(0.1)(ma, training=training)
     return ma
 
 # For m34 Residual, use RepeatVector. Or tensorflow backend.repeat
