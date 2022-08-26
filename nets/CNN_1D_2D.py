@@ -25,7 +25,7 @@ def CNN_1D_2D_model(image_length=224, fft_length=64653, training=False):
 #                             kernel_regularizer=regularizers.l1_l2(l1=1e-5, l2=1e-4),
 #                             bias_regularizer=regularizers.l2(1e-4),
 #                             activity_regularizer=regularizers.l2(1e-5))(output_2D)
-#     output_2D = Dropout(0.1)(output_2D, training=training)
+    output_2D = Dropout(0.1)(output_2D, training=training)
 
     ################# CNN 1D ################################
     input_1D = Input(shape=(fft_length, 1))
