@@ -20,9 +20,8 @@ def TransformerLayer(x, c, num_heads=4, training=None):
                                   kernel_regularizer=regularizers.l1_l2(l1=1e-5, l2=1e-4),
                                   bias_regularizer=regularizers.l2(1e-4),
                                   activity_regularizer=regularizers.l2(1e-5))(x)
-#     x = Dropout(0.1)(x, training=training)
+    x = Dropout(0.1)(x, training=training)
     ma  = MultiHeadAttention(head_size=num_heads, num_heads=num_heads)([x, x, x]) 
-    ma = BatchNormalization()(ma, training=training)
     ma = tf.keras.layers.Dense(c,   activation='relu',
                                      kernel_regularizer=regularizers.l1_l2(l1=1e-5, l2=1e-4),
                                      bias_regularizer=regularizers.l2(1e-4),
@@ -30,10 +29,10 @@ def TransformerLayer(x, c, num_heads=4, training=None):
     ma = tf.keras.layers.Dense(c,  activation='relu',
                                      kernel_regularizer=regularizers.l1_l2(l1=1e-5, l2=1e-4),
                                      bias_regularizer=regularizers.l2(1e-4),
-                                     activity_regularizer=regularizers.l2(1e-5))(ma) + x
-#     ma = Dropout(0.1)(ma, training=training)
+                                     activity_regularizer=regularizers.l2(1e-5))(ma) 
+    ma = Dropout(0.1)(ma, training=training)
     ma = LSTM(units=c, return_sequences=False, activation='relu', recurrent_dropout=0.2, unroll=True)(ma)
-    # ma = Dropout(0.1)(ma, training=training)
+    ma = Dropout(0.1)(ma, training=training)
     return ma
 
 # For m34 Residual, use RepeatVector. Or tensorflow backend.repeat
@@ -77,7 +76,7 @@ def cnn_1d_model(input_shape, training=None):
     https://github.com/philipperemy/very-deep-convnets-raw-waveforms/blob/master/model_resnet.py
     '''
     inputs = Input(shape=[input_shape, 1])
-    x = Conv1D(64,
+    x = Conv1D(48,
                kernel_size=80,
                strides=4,
                padding='same',
@@ -89,29 +88,29 @@ def cnn_1d_model(input_shape, training=None):
 
 
     for i in range(3):
-        x = identity_block(x, kernel_size=3, filters=64, stage=1, block=i, training=training)
+        x = identity_block(x, kernel_size=3, filters=48, stage=1, block=i, training=training)
 
     x = AveragePooling1D(pool_size=4, strides=None)(x)
 
     for i in range(4):
-        x = identity_block(x, kernel_size=3, filters=128, stage=2, block=i, training=training)
+        x = identity_block(x, kernel_size=3, filters=96, stage=2, block=i, training=training)
 
     x = AveragePooling1D(pool_size=4, strides=None)(x)
 
     for i in range(23):
-        x = identity_block(x, kernel_size=3, filters=256, stage=3, block=i, training=training)
+        x = identity_block(x, kernel_size=3, filters=192, stage=3, block=i, training=training)
 
     x = AveragePooling1D(pool_size=4, strides=None)(x)
 
     for i in range(3):
-        x = identity_block(x, kernel_size=3, filters=512, stage=4, block=i, training=training)
+        x = identity_block(x, kernel_size=3, filters=384, stage=4, block=i, training=training)
 #     x = GlobalAveragePooling1D()(x) 
 #     x = Dense(256, activation=ReLU(), 
 #                             kernel_regularizer=regularizers.l1_l2(l1=1e-5, l2=1e-4),
 #                             bias_regularizer=regularizers.l2(1e-4),
 #                             activity_regularizer=regularizers.l2(1e-5))(x)
-    x = tf.keras.layers.Bidirectional(LSTM(units=512, return_sequences=False, activation='relu'))(x)
+#     x = tf.keras.layers.Bidirectional(LSTM(units=512, return_sequences=False, activation='relu'))(x)
 #     x = Dropout(0.1)(x, training=training)
-#     x = TransformerLayer(x, 512, num_heads=8, training=None)
+    x = TransformerLayer(x, 384, num_heads=8, training=None)
     m_1 = Model(inputs, x)
     return m_1
