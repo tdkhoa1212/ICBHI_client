@@ -1,7 +1,10 @@
 from nets.CNN_1D import cnn_1d_model, TransformerLayer
 import tensorflow as tf
 from tensorflow.keras import Model, regularizers
-from tensorflow.keras.layers import Conv1D, Activation, Dense, concatenate, BatchNormalization, GlobalAveragePooling1D, Input, MaxPooling1D, Lambda, GlobalAveragePooling2D, ReLU, MaxPooling2D, Flatten, Dropout, LSTM
+from tensorflow.keras.layers import Conv1D, Activation, Dense, \
+                                    concatenate, BatchNormalization, GlobalAveragePooling1D, \
+                                    Input, MaxPooling1D, Lambda, GlobalAveragePooling2D, \
+                                    ReLU, MaxPooling2D, Flatten, Dropout, LSTM, Reshape
 
 
 def CNN_1D_2D_model(image_length=224, fft_length=64653, training=False):
@@ -13,7 +16,8 @@ def CNN_1D_2D_model(image_length=224, fft_length=64653, training=False):
     model_2D = base_model_2D(input_2D, training=training)
     output_2D = Model(input_2D, model_2D)
     output_2D = output_2D([input_2D])
-    output_2D = TransformerLayer(output_2D, 1536, num_heads=8, training=training)
+    output_2D = Reshape((output_2D.shape[-2]*output_2D.shape[-3], output_2D.shape[-1]))(output_2D)
+    output_2D = TransformerLayer(output_2D, output_2D.shape[-1], num_heads=8, training=training)
 #     output_2D = GlobalAveragePooling2D()(output_2D)
 #     output_2D = Dense(1024, activation=ReLU(), 
 #                             kernel_regularizer=regularizers.l1_l2(l1=1e-5, l2=1e-4),
