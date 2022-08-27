@@ -327,10 +327,10 @@ def power_spectrum(signals, num = 64653):
     PSD = (fhat * np.conj(fhat)) /  num
     out = np.expand_dims(abs(PSD), axis=-1)
 
-    scaler = MinMaxScaler()   
-    out_scaled = scaler.fit_transform(out)
-    all_data.append(out_scaled)
-#     all_data.append(out)
+#     scaler = MinMaxScaler()   
+#     out_scaled = scaler.fit_transform(out)
+#     all_data.append(out_scaled)
+    all_data.append(out)
   return np.array(all_data)
 
 
