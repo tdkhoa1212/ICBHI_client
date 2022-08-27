@@ -11,11 +11,13 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from nets.CNN import EfficientNetV2M, MobileNetV2, InceptionResNetV2, ResNet152V2
 from nets.CNN_1D_2D import CNN_1D_2D_model
+from nets.CNN_2D_2D import CNN_2D_2D_model
 from sklearn.model_selection import train_test_split
 from utils.tools import to_onehot, load_df, create_spectrograms_raw, \
                         get_annotations, get_sound_samples, save_df, sensitivity, \
                         specificity, average_score, harmonic_mean, \
                         matrices, create_stft, mix_up, convert_fft, power_spectrum, arrange_data
+from load_data import load_mel, load_stft
 from sklearn.metrics import confusion_matrix, accuracy_score, ConfusionMatrixDisplay
 import progressbar
 
@@ -36,8 +38,8 @@ parser.add_argument('--model_path', type=str, help='model saving directory')
 parser.add_argument('--train', type=bool, default=False, help='train mode')
 parser.add_argument('--predict', type=bool, default=False, help='predict mode')
 
-parser.add_argument('--based_image', type=str, default='mel', help='stft, mel')
-parser.add_argument('--type_1D', type=str, help='raw, PSD')
+parser.add_argument('--based_image', type=str, default='mel', help='mel_stft, stft, mel')
+parser.add_argument('--type_1D', type=str, default=None, help='raw, PSD')
 args = parser.parse_args()
 
 def train(args):
@@ -104,86 +106,42 @@ def train(args):
     
     ######################## PREPROCESSING DATA ##################################################################
     if args.based_image == 'mel': # convert raw data to mel spectrogram
-        if os.path.exists(os.path.join(args.save_data_dir, 'mel_test_data.pkz')):
-          # Load mel spectrogram data, if they exist
-          image_test_data = load_df(os.path.join(args.save_data_dir, 'mel_test_data.pkz'))
-          image_train_data = load_df(os.path.join(args.save_data_dir, 'mel_train_data.pkz'))
-        else:
-          image_test_data = []
-          image_train_data = []
-          
-          # start convert 1D test data to mel spectrogram
-          print('\n' + 'Convert test data: ...')
-          p_te = progressbar.ProgressBar(maxval=len(test_data), widgets=[progressbar.Bar('=', '[', ']'), ' ', progressbar.Percentage()])
-          p_te.start()
-          for idx_te, te in enumerate(test_data):
-              p_te.update(idx_te+1)
-              if len(image_test_data) == 0:
-                  image_test_data = create_spectrograms_raw(te, n_mels=args.image_length) # API for convert mel spectrogram. It is in utils/tool.py
-              else:
-                  image_test_data = np.concatenate((image_test_data, create_spectrograms_raw(te, n_mels=args.image_length)), axis=0)
-          p_te.finish()
-          
-          # start convert 1D train data to mel spectrogram
-          print('\n' + 'Convert train data: ...')
-          p_tra = progressbar.ProgressBar(maxval=len(train_data), widgets=[progressbar.Bar('=', '[', ']'), ' ', progressbar.Percentage()])
-          p_tra.start()      
-          for idx_tra, tra in enumerate(train_data):
-              p_tra.update(idx_tra+1)
-              if len(image_train_data) == 0:
-                  image_train_data = create_spectrograms_raw(tra, n_mels=args.image_length)
-              else:
-                  image_train_data = np.concatenate((image_train_data, create_spectrograms_raw(tra, n_mels=args.image_length)), axis=0)
-          p_tra.finish()
-          
-          # save test and train data
-          save_df(image_test_data, os.path.join(args.save_data_dir, 'mel_test_data.pkz'))
-          save_df(image_train_data, os.path.join(args.save_data_dir, 'mel_train_data.pkz'))
+      if os.path.exists(os.path.join(args.save_data_dir, 'mel_test_data.pkz')):
+        # Load mel spectrogram data, if they exist
+        image_test_data = load_df(os.path.join(args.save_data_dir, 'mel_test_data.pkz'))
+        image_train_data = load_df(os.path.join(args.save_data_dir, 'mel_train_data.pkz'))
+      else:
+        image_train_data, image_test_data = load_mel(args, train_data, test_data)
+      print(f'\nShape of mel train data: {image_train_data.shape} \t {train_label.shape}')
+      print(f'Shape of mel test data: {image_test_data.shape} \t {test_label.shape}\n')
     
-    if args.based_image == 'stft':
-        if os.path.exists(os.path.join(args.save_data_dir, 'stft_test_data.pkz')):
-          # Load stft data, if they exist
-          image_test_data = load_df(os.path.join(args.save_data_dir, 'stft_test_data.pkz'))
-          image_train_data = load_df(os.path.join(args.save_data_dir, 'stft_train_data.pkz'))
-        else:
-          image_test_data = []
-          image_train_data = []
-          
-          # start convert 1D test data to stft
-          print('\n' + 'Convert test data: ...')
-          p_te = progressbar.ProgressBar(maxval=len(test_data), widgets=[progressbar.Bar('=', '[', ']'), ' ', progressbar.Percentage()])
-          p_te.start()
-          for idx_te, te in enumerate(test_data):
-              p_te.update(idx_te+1)
-              if len(image_test_data) == 0:
-                  image_test_data = create_stft(te)
-              else:
-                  image_test_data = np.concatenate((image_test_data, create_stft(te)), axis=0)
-          p_te.finish()
-          
-          # start convert 1D train data to stft
-          print('\n' + 'Convert train data: ...')
-          p_tra = progressbar.ProgressBar(maxval=len(train_data), widgets=[progressbar.Bar('=', '[', ']'), ' ', progressbar.Percentage()])
-          p_tra.start()      
-          for idx_tra, tra in enumerate(train_data):
-              p_tra.update(idx_tra+1)
-              if len(image_train_data) == 0:
-                  image_train_data = create_stft(tra)
-              else:
-                  image_train_data = np.concatenate((image_train_data, create_stft(tra)), axis=0)
-          p_tra.finish()
-           
-          # save stft-form data
-          save_df(image_test_data, os.path.join(args.save_data_dir, 'stft_test_data.pkz'))
-          save_df(image_train_data, os.path.join(args.save_data_dir, 'stft_train_data.pkz'))
-
-
+    elif args.based_image == 'stft':
+      if os.path.exists(os.path.join(args.save_data_dir, 'stft_test_data.pkz')):
+        # Load stft data, if they exist
+        image_test_data = load_df(os.path.join(args.save_data_dir, 'stft_test_data.pkz'))
+        image_train_data = load_df(os.path.join(args.save_data_dir, 'stft_train_data.pkz'))
+      else:
+        image_train_data, image_test_data = load_stft(args, train_data, test_data)
+      print(f'\nShape of stft train data: {image_train_data.shape} \t {train_label.shape}')
+      print(f'Shape of stft test data: {image_test_data.shape} \t {test_label.shape}\n')
+      
+    else:
+      if os.path.exists(os.path.join(args.save_data_dir, 'mel_test_data.pkz')):
+        # Load both mel, stft spectrogram data, if they exist
+        mel_image_test_data = load_df(os.path.join(args.save_data_dir, 'mel_test_data.pkz'))
+        mel_image_train_data = load_df(os.path.join(args.save_data_dir, 'mel_train_data.pkz'))
+        stft_image_test_data = load_df(os.path.join(args.save_data_dir, 'stft_test_data.pkz'))
+        stft_image_train_data = load_df(os.path.join(args.save_data_dir, 'stft_train_data.pkz'))
+      else:
+        mel_image_train_data, mel_image_test_data = load_mel(args, train_data, test_data)
+        stft_image_train_data, stft_image_test_data = load_stft(args, train_data, test_data)
+        
+      print(f'\nShape of mel train data: {mel_image_train_data.shape} \t {train_label.shape}')
+      print(f'Shape of mel test data: {mel_image_test_data.shape} \t {test_label.shape}\n')
+      print(f'\nShape of stft train data: {stft_image_train_data.shape} \t {train_label.shape}')
+      print(f'Shape of stft test data: {stft_image_test_data.shape} \t {test_label.shape}\n')
+      
     ######################## TRAIN PHASE ##################################################################
-    print(f'\nShape of train data: {image_train_data.shape} \t {train_label.shape}')
-    print(f'Shape of test data: {image_test_data.shape} \t {test_label.shape}\n')
-
-    image_train_data = image_train_data.astype(np.float32)
-    image_test_data = image_test_data.astype(np.float32)
 
     train_label = train_label.astype(np.float32)
     test_label = test_label.astype(np.float32)
@@ -199,7 +157,10 @@ def train(args):
         test_fft = power_spectrum(test_data, num=args.fft_length)
         save_df(train_fft, os.path.join(args.save_data_dir, 'train_fft.pkz'))
         save_df(test_fft, os.path.join(args.save_data_dir, 'test_fft.pkz'))
-    else:
+      print(f'\nShape of 1D training data{train_fft.shape}')
+      print(f'Shape of 1D test data{test_fft.shape}\n')
+      
+    if args.type_1D == 'raw':
       print('1D data in raw form' + '-'*10)
       if os.path.exists(os.path.join(args.save_data_dir, 'train_raw.pkz')):
         train_fft = load_df(os.path.join(args.save_data_dir, 'train_raw.pkz'))
@@ -209,14 +170,18 @@ def train(args):
         test_fft = arrange_data(test_data, num=args.fft_length)
         save_df(train_fft, os.path.join(args.save_data_dir, 'train_raw.pkz'))
         save_df(test_fft, os.path.join(args.save_data_dir, 'test_raw.pkz'))
-
-    print(f'\nShape of 1D training data{train_fft.shape}')
-    print(f'Shape of 1D test data{test_fft.shape}\n')
-    
+      print(f'\nShape of 1D training data{train_fft.shape}')
+      print(f'Shape of 1D test data{test_fft.shape}\n')
+  
     #-------------------------- MIXUP --------------------------------------------------------------------
-    train_ds_one = (image_train_data, train_fft, train_label)
-    train_ds_two = (image_train_data, train_fft, train_label)
-    images_org, ffts_org, labels_org = mix_up(train_ds_one, train_ds_two)
+    if args.type_1D != None:
+      train_ds_one = (image_train_data, train_fft, train_label)
+      train_ds_two = (image_train_data, train_fft, train_label)
+      images_org, ffts_org, labels_org = mix_up(train_ds_one, train_ds_two)
+    if args.based_image == 'mel_stft':
+      train_ds_one = (mel_image_train_data, stft_image_train_data, train_label)
+      train_ds_two = (mel_image_train_data, stft_image_train_data, train_label)
+      images_org, ffts_org, labels_org = mix_up(train_ds_one, train_ds_two)
 
 
     print(f'\nShape of 1D MIXUP training data: {images_org.shape}, {ffts_org.shape}, {labels_org.shape}\n')
@@ -231,14 +196,14 @@ def train(args):
       model = ResNet152V2(args.image_length, True)
     if args.model_name == 'Model_1D2D':
       model = CNN_1D_2D_model(args.image_length, args.fft_length, True)
+    if args.model_name == 'Model_2D2D':
+      model = CNN_2D_2D_model(args.image_length, True)
 
     name = 'model_' + args.model_name + '_' + args.based_image + '.h5'
     if args.load_weight:
       print(f'\nLoad weight file from {os.path.join(args.model_path, name)}\n')
       model.load_weights(os.path.join(args.model_path, name))
     # tf.keras.optimizers.RMSprop(1e-4)
-    # tf.keras.optimizers.Adam(1e-4)
-    # tf.keras.losses.LogCosh(reduction=tf.keras.losses.Reduction.SUM)
     model.compile(optimizer=tf.keras.optimizers.Adam(1e-4), 
                   loss=tf.keras.losses.LogCosh(reduction=tf.keras.losses.Reduction.SUM), 
                   metrics=['acc', sensitivity, specificity, average_score, harmonic_mean]) 
@@ -250,6 +215,13 @@ def train(args):
                             epochs     = args.epochs,
                             batch_size = args.batch_size,
                             validation_data = ([image_test_data, test_fft], test_label),
+#                             callbacks=[callback]
+                            )
+      elif args.model_name == 'Model_2D2D':
+        history = model.fit([images_org, ffts_org], labels_org,
+                            epochs     = args.epochs,
+                            batch_size = args.batch_size,
+                            validation_data = ([mel_image_test_data, stft_image_test_data], test_label),
 #                             callbacks=[callback]
                             )
       else:
@@ -276,12 +248,16 @@ def train(args):
       model = ResNet152V2(args.image_length, False)
     if args.model_name == 'Model_1D2D':
       model = CNN_1D_2D_model(args.image_length, args.fft_length, False)
+    if args.model_name == 'Model_2D2D':
+      model = CNN_2D_2D_model(args.image_length, False)
     
     if args.predict:
         # outputs validation by matrices: sensitivity, specificity, average_score, harmonic_mean
         model.load_weights(os.path.join(args.model_path, name))
         if args.model_name == 'Model_1D2D':
           pred_label = model.predict([image_test_data, test_fft])
+        elif args.model_name == 'Model_2D2D':
+          pred_label = model.predict([mel_image_test_data, stft_image_test_data])
         else:
           pred_label = model.predict(image_test_data)
         
