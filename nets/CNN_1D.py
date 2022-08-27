@@ -20,20 +20,20 @@ def TransformerLayer(x, c, num_heads=4, training=None):
                                   kernel_regularizer=regularizers.l1_l2(l1=1e-5, l2=1e-4),
                                   bias_regularizer=regularizers.l2(1e-4),
                                   activity_regularizer=regularizers.l2(1e-5))(x)
-    x = Dropout(0.1)(x, training=training)
+    x = Dropout(0.2)(x, training=training)
     ma  = MultiHeadAttention(head_size=num_heads, num_heads=num_heads)([x, x, x]) 
     ma = tf.keras.layers.Dense(c,   activation='relu',
                                      kernel_regularizer=regularizers.l1_l2(l1=1e-5, l2=1e-4),
                                      bias_regularizer=regularizers.l2(1e-4),
                                      activity_regularizer=regularizers.l2(1e-5))(ma) 
-    ma = Dropout(0.1)(ma, training=training)
+    ma = Dropout(0.2)(ma, training=training)
     ma = tf.keras.layers.Dense(c,  activation='relu',
                                      kernel_regularizer=regularizers.l1_l2(l1=1e-5, l2=1e-4),
                                      bias_regularizer=regularizers.l2(1e-4),
                                      activity_regularizer=regularizers.l2(1e-5))(ma) 
-    ma = Dropout(0.1)(ma, training=training)
+    ma = Dropout(0.2)(ma, training=training)
     ma = GRU(units=c, return_sequences=False, activation='relu', recurrent_dropout=0.2, unroll=True)(ma)
-    ma = Dropout(0.1)(ma, training=training)
+#     ma = Dropout(0.1)(ma, training=training)
     return ma
 
 # For m34 Residual, use RepeatVector. Or tensorflow backend.repeat
