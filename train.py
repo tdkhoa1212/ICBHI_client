@@ -177,11 +177,12 @@ def train(args):
     if args.type_1D != None:
       train_ds_one = (image_train_data, train_fft, train_label)
       train_ds_two = (image_train_data, train_fft, train_label)
-      images_org, ffts_org, labels_org = mix_up(train_ds_one, train_ds_two)
+      images_org, ffts_org, labels_org = mix_up(train_ds_one, train_ds_two, args)
+      
     if args.based_image == 'mel_stft':
       train_ds_one = (mel_image_train_data, stft_image_train_data, train_label)
       train_ds_two = (mel_image_train_data, stft_image_train_data, train_label)
-      images_org, ffts_org, labels_org = mix_up(train_ds_one, train_ds_two)
+      images_org, ffts_org, labels_org = mix_up(train_ds_one, train_ds_two, args)
 
 
     print(f'\nShape of 1D MIXUP training data: {images_org.shape}, {ffts_org.shape}, {labels_org.shape}\n')
