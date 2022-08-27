@@ -30,7 +30,7 @@ def CNN_2D_2D_model(image_length=224, training=False):
     output_mel = GlobalAveragePooling2D()(output_mel)
 
     ################# CNN mel vs stft ################################
-    output = concatenate((input_mel, input_stft))
+    output = concatenate((output_mel, output_stft))
     output = Dense(4, activation='softmax', 
                             kernel_regularizer=regularizers.l1_l2(l1=1e-5, l2=1e-4),
                             bias_regularizer=regularizers.l2(1e-4),
