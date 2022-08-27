@@ -6,7 +6,7 @@ from tensorflow.keras.layers import Conv1D, Activation, Dense, \
                                     ReLU, MaxPooling2D, Flatten, Dropout, LSTM, Reshape
 
 
-def CNN_1D_2D_model(image_length=224, training=False):
+def CNN_2D_2D_model(image_length=224, training=False):
     ################# CNN stft ################################
     input_stft = Input(shape=(image_length, image_length, 1))
     base_model_stft = tf.keras.applications.InceptionResNetV2(include_top=False,
