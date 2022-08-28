@@ -113,7 +113,7 @@ def cnn_1d_model(input_shape, training=None):
 #     x = tf.keras.layers.Bidirectional(LSTM(units=512, return_sequences=False, activation='relu'))(x)
 #     x = Dropout(0.1)(x, training=training)
 #     x = TransformerLayer(x, 384, num_heads=16, training=training)
-    x = GRU(units=384, return_sequences=True, activation='relu', unroll=True)(ma)
-    x = GRU(units=384, return_sequences=False, activation='relu', unroll=True)(ma)
+    x = GRU(units=384, return_sequences=True, activation='relu', unroll=True)(x)
+    x = GRU(units=384, return_sequences=False, activation='relu', unroll=True)(x)
     m_1 = Model(inputs, x)
     return m_1
