@@ -261,6 +261,7 @@ def two_permutation_data(ds):
   data_1_two = []
   data_2_two = []
   labels_two = []
+  np.random.seed(0)
 
   for idx, i in enumerate(number_label):
     label_idx_1[i].append(idx)
@@ -273,20 +274,21 @@ def two_permutation_data(ds):
 
   # label 1--------------------------------------------
   for i in label_idx_1.values():
+    i = np.random.permutation(list(i))
     if labels_one == []:
-      labels_one = label[list(i)[:min_]]
+      labels_one = label[i[:min_]]
     else:
-      labels_one = np.concatenate((labels_one, label[list(i)[:min_]]), axis=0)
+      labels_one = np.concatenate((labels_one, label[i[:min_]]), axis=0)
 
     if data_1_one == []:
-      data_1_one = data_1[list(i)[:min_]]
+      data_1_one = data_1[i[:min_]]
     else:
-      data_1_one = np.concatenate((data_1_one, data_1[list(i)[:min_]]), axis=0)
+      data_1_one = np.concatenate((data_1_one, data_1[i[:min_]]), axis=0)
 
     if data_2_one == []:
-      data_2_one = data_2[list(i)[:min_]]
+      data_2_one = data_2[i[:min_]]
     else:
-      data_2_one = np.concatenate((data_2_one, data_2[list(i)[:min_]]), axis=0)
+      data_2_one = np.concatenate((data_2_one, data_2[i[:min_]]), axis=0)
 
   # label 2---------------------------------------------
   label_2 = np.random.permutation(list(label_idx_1.keys()))
@@ -295,20 +297,21 @@ def two_permutation_data(ds):
     label_idx_2[i] = label_idx_1[i]
 
   for i in label_idx_2.values():
+    i = np.random.permutation(list(i))
     if labels_two == []:
-      labels_two = label[list(i)[:min_]]
+      labels_two = label[i[:min_]]
     else:
-      labels_two = np.concatenate((labels_two, label[list(i)[:min_]]), axis=0)
+      labels_two = np.concatenate((labels_two, label[i[:min_]]), axis=0)
 
     if data_1_two == []:
-      data_1_two = data_1[list(i)[:min_]]
+      data_1_two = data_1[i[:min_]]
     else:
-      data_1_two = np.concatenate((data_1_two, data_1[list(i)[:min_]]), axis=0)
+      data_1_two = np.concatenate((data_1_two, data_1[i[:min_]]), axis=0)
 
     if data_2_two == []:
-      data_2_two = data_2[list(i)[:min_]]
+      data_2_two = data_2[i[:min_]]
     else:
-      data_2_two = np.concatenate((data_2_two, data_2[list(i)[:min_]]), axis=0)
+      data_2_two = np.concatenate((data_2_two, data_2[i[:min_]]), axis=0)
   
   ds_one = (data_1_one, data_2_one, labels_one)
   ds_two = (data_1_two, data_2_two, labels_two)
