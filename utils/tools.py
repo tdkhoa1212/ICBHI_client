@@ -262,25 +262,31 @@ def two_permutation_data(ds):
   data_2_two = []
   labels_two = []
 
-  # label 1--------------------------------------------
   for idx, i in enumerate(number_label):
     label_idx_1[i].append(idx)
 
+  # get the shortest length---------------------------
+  all_len = []
+  for i in label_idx_1:
+    all_len.append(len(label_idx_1[i]))
+  min_ = np.min(all_len)
+
+  # label 1--------------------------------------------
   for i in label_idx_1.values():
     if labels_one == []:
-      labels_one = label[list(i)]
+      labels_one = label[list(i)[:min_]]
     else:
-      labels_one = np.concatenate((labels_one, label[list(i)]), axis=0)
+      labels_one = np.concatenate((labels_one, label[list(i)[:min_]]), axis=0)
 
     if data_1_one == []:
-      data_1_one = data_1[list(i)]
+      data_1_one = data_1[list(i)[:min_]]
     else:
-      data_1_one = np.concatenate((data_1_one, data_1[list(i)]), axis=0)
+      data_1_one = np.concatenate((data_1_one, data_1[list(i)[:min_]]), axis=0)
 
     if data_2_one == []:
-      data_2_one = data_2[list(i)]
+      data_2_one = data_2[list(i)[:min_]]
     else:
-      data_2_one = np.concatenate((data_2_one, data_2[list(i)]), axis=0)
+      data_2_one = np.concatenate((data_2_one, data_2[list(i)[:min_]]), axis=0)
 
   # label 2---------------------------------------------
   label_2 = np.random.permutation(list(label_idx_1.keys()))
@@ -290,19 +296,19 @@ def two_permutation_data(ds):
 
   for i in label_idx_2.values():
     if labels_two == []:
-      labels_two = label[list(i)]
+      labels_two = label[list(i)[:min_]]
     else:
-      labels_two = np.concatenate((labels_two, label[list(i)]), axis=0)
+      labels_two = np.concatenate((labels_two, label[list(i)[:min_]]), axis=0)
 
     if data_1_two == []:
-      data_1_two = data_1[list(i)]
+      data_1_two = data_1[list(i)[:min_]]
     else:
-      data_1_two = np.concatenate((data_1_two, data_1[list(i)]), axis=0)
+      data_1_two = np.concatenate((data_1_two, data_1[list(i)[:min_]]), axis=0)
 
     if data_2_two == []:
-      data_2_two = data_2[list(i)]
+      data_2_two = data_2[list(i)[:min_]]
     else:
-      data_2_two = np.concatenate((data_2_two, data_2[list(i)]), axis=0)
+      data_2_two = np.concatenate((data_2_two, data_2[list(i)[:min_]]), axis=0)
   
   ds_one = (data_1_one, data_2_one, labels_one)
   ds_two = (data_1_two, data_2_two, labels_two)
@@ -310,9 +316,9 @@ def two_permutation_data(ds):
 
 def mix_up(ds, args, alpha=[0.15, 0.2, 0.175], batch_size_range=[1024, 1024, 1024]):
     # Unpack two datasets
+    images_org, ffts_org, labels_org = ds 
     ds_one, ds_two = two_permutation_data(ds)
     images_one, ffts_one, labels_one = ds_one 
-    images_org, ffts_org, labels_org = ds_one 
     images_two, ffts_two, labels_two = ds_two
 
     for idx, batch_size in enumerate(batch_size_range):
