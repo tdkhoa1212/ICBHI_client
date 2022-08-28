@@ -304,8 +304,8 @@ def two_permutation_data(ds):
     else:
       data_2_two = np.concatenate((data_2_two, data_2[list(i)]), axis=0)
   
-  ds_one = (data_1_one, data_2_one, label_one)
-  ds_two = (data_1_two, data_2_two, label_two)
+  ds_one = (data_1_one, data_2_one, labels_one)
+  ds_two = (data_1_two, data_2_two, labels_two)
   return ds_one, ds_two
 
 def mix_up(ds, args, alpha=[0.15, 0.2, 0.175], batch_size_range=[1024, 1024, 1024]):
