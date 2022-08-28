@@ -243,8 +243,15 @@ def sample_beta_distribution(size, concentration_0=0.2, concentration_1=0.2):
     gamma_2_sample = tf.random.gamma(shape=[size], alpha=concentration_0)
     return gamma_1_sample / (gamma_1_sample + gamma_2_sample)
 
+def onehot_to(labels):
+  a = []
+  for i in labels:
+    i = i.tolist()
+    a.append(i.index(1))
+  return np.array(a)
+
 def two_permutation_data(ds):
-  data_1, data_2, labels = ds
+  data_1, data_2, label = ds
   number_label = onehot_to(label)
   label_idx_1 = {0: [], 1: [], 2: [], 3: []}
 
@@ -271,7 +278,7 @@ def two_permutation_data(ds):
       data_1_one = np.concatenate((data_1_one, data_1[list(i)]), axis=0)
 
     if data_2_one == []:
-      data_2_one = data_2_one[list(i)]
+      data_2_one = data_2[list(i)]
     else:
       data_2_one = np.concatenate((data_2_one, data_2[list(i)]), axis=0)
 
@@ -293,7 +300,7 @@ def two_permutation_data(ds):
       data_1_two = np.concatenate((data_1_two, data_1[list(i)]), axis=0)
 
     if data_2_two == []:
-      data_2_two = data_2_two[list(i)]
+      data_2_two = data_2[list(i)]
     else:
       data_2_two = np.concatenate((data_2_two, data_2[list(i)]), axis=0)
   
