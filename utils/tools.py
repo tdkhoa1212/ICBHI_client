@@ -243,21 +243,70 @@ def sample_beta_distribution(size, concentration_0=0.2, concentration_1=0.2):
     gamma_2_sample = tf.random.gamma(shape=[size], alpha=concentration_0)
     return gamma_1_sample / (gamma_1_sample + gamma_2_sample)
 
+def two_permutation_data(ds):
+  data_1, data_2, labels = ds
+  number_label = onehot_to(label)
+  label_idx_1 = {0: [], 1: [], 2: [], 3: []}
 
-def mix_up(ds_one, ds_two, args, alpha=[0.15, 0.2, 0.175], batch_size_range=[1024, 1024, 1024]):
+  data_1_one = []
+  data_2_one = []
+  labels_one = []
+  data_1_two = []
+  data_2_two = []
+  labels_two = []
+
+  # label 1--------------------------------------------
+  for idx, i in enumerate(number_label):
+    label_idx_1[i].append(idx)
+
+  for i in label_idx_1.values():
+    if labels_one == []:
+      labels_one = label[list(i)]
+    else:
+      labels_one = np.concatenate((labels_one, label[list(i)]), axis=0)
+
+    if data_1_one == []:
+      data_1_one = data_1[list(i)]
+    else:
+      data_1_one = np.concatenate((data_1_one, data_1[list(i)]), axis=0)
+
+    if data_2_one == []:
+      data_2_one = data_2_one[list(i)]
+    else:
+      data_2_one = np.concatenate((data_2_one, data_2[list(i)]), axis=0)
+
+  # label 2---------------------------------------------
+  label_2 = np.random.permutation(list(label_idx_1.keys()))
+  label_idx_2 = {}
+  for i in label_2:
+    label_idx_2[i] = label_idx_1[i]
+
+  for i in label_idx_2.values():
+    if labels_two == []:
+      labels_two = label[list(i)]
+    else:
+      labels_two = np.concatenate((labels_two, label[list(i)]), axis=0)
+
+    if data_1_two == []:
+      data_1_two = data_1[list(i)]
+    else:
+      data_1_two = np.concatenate((data_1_two, data_1[list(i)]), axis=0)
+
+    if data_2_two == []:
+      data_2_two = data_2_two[list(i)]
+    else:
+      data_2_two = np.concatenate((data_2_two, data_2[list(i)]), axis=0)
+  
+  ds_one = (data_1_one, data_2_one, label_one)
+  ds_two = (data_1_two, data_2_two, label_two)
+  return ds_one, ds_two
+
+def mix_up(ds, args, alpha=[0.15, 0.2, 0.175], batch_size_range=[1024, 1024, 1024]):
     # Unpack two datasets
+    ds_one, ds_two = two_permutation_data(ds)
     images_one, ffts_one, labels_one = ds_one 
-    images_two, ffts_two, labels_two = ds_two
-    list_rand = list(range(len(labels_one)))
-
-    # Random the first data
-    np.random.shuffle(list_rand)
-    images_one, ffts_one, labels_one = images_one[list_rand], ffts_one[list_rand], labels_one[list_rand]
-
-    # Random the second data
-    np.random.shuffle(list_rand)
-    images_two, ffts_two, labels_two = images_two[list_rand], ffts_two[list_rand], labels_two[list_rand]
     images_org, ffts_org, labels_org = ds_one 
+    images_two, ffts_two, labels_two = ds_two
 
     for idx, batch_size in enumerate(batch_size_range):
       num = int(len(labels_one)/batch_size)
