@@ -393,6 +393,7 @@ def power_spectrum(signals, num = 64653):
   for signal in signals:
     fhat = np.fft.fft(signal, num) 
     PSD = (fhat * np.conj(fhat)) /  num
+    PSD = PSD[:num//2]
     out = np.expand_dims(abs(PSD), axis=-1)
 
 #     scaler = MinMaxScaler()   
