@@ -196,7 +196,7 @@ def train(args):
     if args.model_name == 'ResNet152V2':
       model = ResNet152V2(args.image_length, True)
     if args.model_name == 'Model_1D2D':
-      if if args.type_1D == 'PSD':
+      if args.type_1D == 'PSD':
         length = args.fft_length//2
       else:
         length = args.fft_length
@@ -252,7 +252,7 @@ def train(args):
     if args.model_name == 'ResNet152V2':
       model = ResNet152V2(args.image_length, False)
     if args.model_name == 'Model_1D2D':
-      if if args.type_1D == 'PSD':
+      if args.type_1D == 'PSD':
         length = args.fft_length//2
       else:
         length = args.fft_length
