@@ -194,7 +194,11 @@ def train(args):
     if args.model_name == 'ResNet152V2':
       model = ResNet152V2(args.image_length, True)
     if args.model_name == 'Model_1D2D':
-      model = CNN_1D_2D_model(args.image_length, args.fft_length//2, True)
+      if if args.type_1D == 'PSD':
+        length = args.fft_length//2
+      else:
+        length = args.fft_length
+      model = CNN_1D_2D_model(args.image_length, length, True)
     if args.model_name == 'Model_2D2D':
       model = CNN_2D_2D_model(args.image_length, True)
 
@@ -246,7 +250,11 @@ def train(args):
     if args.model_name == 'ResNet152V2':
       model = ResNet152V2(args.image_length, False)
     if args.model_name == 'Model_1D2D':
-      model = CNN_1D_2D_model(args.image_length, args.fft_length//2, False)
+      if if args.type_1D == 'PSD':
+        length = args.fft_length//2
+      else:
+        length = args.fft_length
+      model = CNN_1D_2D_model(args.image_length, length, False)
     if args.model_name == 'Model_2D2D':
       model = CNN_2D_2D_model(args.image_length, False)
     
