@@ -31,6 +31,11 @@ def CNN_2D_2D_model(image_length=224, training=False):
 
     ################# CNN mel vs stft ################################
     output = concatenate((output_mel, output_stft))
+    output = tf.keras.layers.Dense(1024,  activation='relu',
+                                  kernel_regularizer=regularizers.l1_l2(l1=1e-5, l2=1e-4),
+                                  bias_regularizer=regularizers.l2(1e-4),
+                                  activity_regularizer=regularizers.l2(1e-5))(output)
+    output = Dropout(0.2)(output, training=training)
     output = Dense(4, activation='softmax', 
                             kernel_regularizer=regularizers.l1_l2(l1=1e-5, l2=1e-4),
                             bias_regularizer=regularizers.l2(1e-4),
