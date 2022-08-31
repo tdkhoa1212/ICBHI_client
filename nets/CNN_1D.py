@@ -32,7 +32,7 @@ def TransformerLayer(x, c, num_heads=16, training=None):
                                      activity_regularizer=regularizers.l2(1e-5))(ma) 
     ma = Dropout(0.15)(ma, training=training)
     ma = tf.keras.layers.Bidirectional(GRU(units=c, return_sequences=False, activation='relu'))(ma)
-    ma = Dropout(0.15)(ma, training=training)
+#     ma = Dropout(0.15)(ma, training=training)
     return ma
 
 # For m34 Residual, use RepeatVector. Or tensorflow backend.repeat
