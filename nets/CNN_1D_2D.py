@@ -17,10 +17,10 @@ def CNN_1D_2D_model(image_length=224, fft_length=64653, training=False):
     output_2D = Model(input_2D, model_2D)
     output_2D = output_2D([input_2D])
 
-    output_2D = Reshape((output_2D.shape[-2]*output_2D.shape[-3], output_2D.shape[-1]))(output_2D)
-    output_2D = TransformerLayer(output_2D, output_2D.shape[-1], num_heads=16, training=training)
+#     output_2D = Reshape((output_2D.shape[-2]*output_2D.shape[-3], output_2D.shape[-1]))(output_2D)
+#     output_2D = TransformerLayer(output_2D, output_2D.shape[-1], num_heads=16, training=training)
 
-#     output_2D = GlobalAveragePooling2D()(output_2D)
+    output_2D = GlobalAveragePooling2D()(output_2D)
 #     output_2D = Dense(1024, activation=ReLU(), 
 #                             kernel_regularizer=regularizers.l1_l2(l1=1e-5, l2=1e-4),
 #                             bias_regularizer=regularizers.l2(1e-4),
