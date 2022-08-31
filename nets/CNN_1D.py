@@ -31,7 +31,7 @@ def TransformerLayer(x, c, num_heads=16, training=None):
                                      bias_regularizer=regularizers.l2(1e-4),
                                      activity_regularizer=regularizers.l2(1e-5))(ma) 
     ma = Dropout(0.15)(ma, training=training)
-    ma = tf.keras.layers.Bidirectional(GRU(units=c, return_sequences=False, activation='relu', unroll=True))(ma)
+    ma = tf.keras.layers.Bidirectional(GRU(units=c, return_sequences=False, activation='relu'))(ma)
     ma = Dropout(0.15)(ma, training=training)
     return ma
 
@@ -111,8 +111,8 @@ def cnn_1d_model(input_shape, training=None):
 #                             activity_regularizer=regularizers.l2(1e-5))(x)
 #     x = tf.keras.layers.Bidirectional(LSTM(units=512, return_sequences=False, activation='relu'))(x)
 #     x = Dropout(0.1)(x, training=training)
-#     x = TransformerLayer(x, 384, num_heads=16, training=training)
-    x = tf.keras.layers.Bidirectional(GRU(units=384, return_sequences=False, activation='relu', unroll=True))(x)
+    x = TransformerLayer(x, 384, num_heads=16, training=training)
+#     x = tf.keras.layers.Bidirectional(GRU(units=384, return_sequences=False, activation='relu', unroll=True))(x)
 #     x = Dropout(0.15)(x, training=training)
     m_1 = Model(inputs, x)
     return m_1
