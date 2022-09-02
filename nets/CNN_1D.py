@@ -26,12 +26,12 @@ def TransformerLayer(x, c, num_heads=16, training=None):
                                      kernel_regularizer=regularizers.l1_l2(l1=1e-5, l2=1e-4),
                                      bias_regularizer=regularizers.l2(1e-4),
                                      activity_regularizer=regularizers.l2(1e-5))(ma) 
-    ma = Dropout(0.15)(ma, training=training)
+#     ma = Dropout(0.15)(ma, training=training)
     ma = tf.keras.layers.Dense(c,  activation='relu',
                                      kernel_regularizer=regularizers.l1_l2(l1=1e-5, l2=1e-4),
                                      bias_regularizer=regularizers.l2(1e-4),
                                      activity_regularizer=regularizers.l2(1e-5))(ma) 
-#     ma = Dropout(0.15)(ma, training=training)
+    ma = Dropout(0.15)(ma, training=training)
     ma = tf.keras.layers.Bidirectional(GRU(units=c, return_sequences=False, activation='relu', recurrent_dropout=0.1))(ma)
     ma = Dropout(0.15)(ma, training=training)
     return ma
