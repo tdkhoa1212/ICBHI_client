@@ -253,7 +253,7 @@ def onehot_to(labels):
 def two_permutation_data(ds):
   data_1, data_2, label = ds
   number_label = onehot_to(label)
-  label_idx_1 = {0: [], 1: [], 2: [], 3: []}
+  label_idx_1 = {1: [], 2: [], 3: []}  # don't choose normal labels
 
   data_1_one = []
   data_2_one = []
