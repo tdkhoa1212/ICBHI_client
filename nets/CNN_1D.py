@@ -43,14 +43,13 @@ def TransformerLayer(x, c, num_heads=16, training=None):
 """
 
 def TransformerLayer(x, c, num_heads=16, training=None):
-    x = GRU(units=c, return_sequences=True, activation='relu', recurrent_dropout=0.1)(x)
-    x = Dropout(0.15)(x, training=training)
     x = tf.keras.layers.Dense(c,  activation='relu',
                                   kernel_regularizer=regularizers.l1_l2(l1=1e-5, l2=1e-4),
                                   bias_regularizer=regularizers.l2(1e-4),
                                   activity_regularizer=regularizers.l2(1e-5))(x)
     x = Dropout(0.15)(x, training=training)
     ma  = MultiHeadAttention(head_size=num_heads, num_heads=num_heads)([x, x, x]) 
+    c = c//2
     ma = tf.keras.layers.Dense(c,  activation='relu',
                                      kernel_regularizer=regularizers.l1_l2(l1=1e-5, l2=1e-4),
                                      bias_regularizer=regularizers.l2(1e-4),
