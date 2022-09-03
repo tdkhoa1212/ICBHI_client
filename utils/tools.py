@@ -264,7 +264,8 @@ def two_permutation_data(ds):
   np.random.seed(0)
 
   for idx, i in enumerate(number_label):
-    label_idx_1[i].append(idx)
+    if i != 0:
+      label_idx_1[i].append(idx)
 
   # get the shortest length---------------------------
   all_len = []
