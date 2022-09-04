@@ -43,33 +43,24 @@ def TransformerLayer(x, c, num_heads=16, training=None):
 """
 
 def TransformerLayer(x, c, num_heads=16, training=None):
-    x1 = tf.keras.layers.Dense(c,  activation=tf.keras.activations.elu,
-                                  kernel_regularizer=regularizers.l1_l2(l1=1e-5, l2=1e-4),
+    x = tf.keras.layers.Dense(c, kernel_regularizer=regularizers.l1_l2(l1=1e-5, l2=1e-4),
                                   bias_regularizer=regularizers.l2(1e-4),
                                   activity_regularizer=regularizers.l2(1e-5))(x)
-    x1 = Dropout(0.15)(x1, training=training)
-    ma1  = MultiHeadAttention(head_size=num_heads, num_heads=num_heads)([x1, x1, x1]) 
-    
-    x2 = tf.keras.layers.Dense(c, kernel_regularizer=regularizers.l1_l2(l1=1e-5, l2=1e-4),
-                                  bias_regularizer=regularizers.l2(1e-4),
-                                  activity_regularizer=regularizers.l2(1e-5))(x)
-    x2 = Dropout(0.15)(x2, training=training)
-    ma2  = MultiHeadAttention(head_size=num_heads, num_heads=num_heads)([x2, x2, x2]) 
-    
-    ma = ma1 + ma2
-    
+    x = Dropout(0.1)(x, training=training)
+    ma  = MultiHeadAttention(head_size=num_heads, num_heads=num_heads)([x, x, x]) 
+        
     ma = tf.keras.layers.Dense(c,  activation='relu',
                                      kernel_regularizer=regularizers.l1_l2(l1=1e-5, l2=1e-4),
                                      bias_regularizer=regularizers.l2(1e-4),
                                      activity_regularizer=regularizers.l2(1e-5))(ma) 
-    ma = Dropout(0.15)(ma, training=training)
+    ma = Dropout(0.1)(ma, training=training)
     ma = tf.keras.layers.Dense(c,  activation='relu',
                                      kernel_regularizer=regularizers.l1_l2(l1=1e-5, l2=1e-4),
                                      bias_regularizer=regularizers.l2(1e-4),
                                      activity_regularizer=regularizers.l2(1e-5))(ma) 
-    ma = Dropout(0.15)(ma, training=training)
+    ma = Dropout(0.1)(ma, training=training)
     ma = tf.keras.layers.Bidirectional(GRU(units=c, return_sequences=False, activation='relu', recurrent_dropout=0.1))(ma)
-    ma = Dropout(0.15)(ma, training=training)
+    ma = Dropout(0.1)(ma, training=training)
     return ma
 
 # For m34 Residual, use RepeatVector. Or tensorflow backend.repeat
@@ -121,18 +112,18 @@ def cnn_1d_model(input_shape, training=None):
                kernel_regularizer=regularizers.l2(l=0.0001),)(inputs)
     x = BatchNormalization()(x)
     x = Activation('relu')(x)
-    x = MaxPooling1D(pool_size=4, strides=None)(x)
+    x = AveragePooling1D(pool_size=4, strides=None)(x)
 
 
     for i in range(3):
         x = identity_block(x, kernel_size=3, filters=48, stage=1, block=i, training=training)
 
-    x = MaxPooling1D(pool_size=4, strides=None)(x)
+    x = AveragePooling1D(pool_size=4, strides=None)(x)
 
     for i in range(4):
         x = identity_block(x, kernel_size=3, filters=96, stage=2, block=i, training=training)
 
-    x = MaxPooling1D(pool_size=4, strides=None)(x)
+    x = AveragePooling1D(pool_size=4, strides=None)(x)
 
     for i in range(23):
         x = identity_block(x, kernel_size=3, filters=192, stage=3, block=i, training=training)
