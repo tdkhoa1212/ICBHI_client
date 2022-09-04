@@ -50,8 +50,7 @@ def TransformerLayer(x, c, num_heads=16, training=None):
     x1 = Dropout(0.15)(x1, training=training)
     ma1  = MultiHeadAttention(head_size=num_heads, num_heads=num_heads)([x1, x1, x1]) 
     
-    x2 = tf.keras.layers.Dense(c,  activation='tanh',
-                                  kernel_regularizer=regularizers.l1_l2(l1=1e-5, l2=1e-4),
+    x2 = tf.keras.layers.Dense(c, kernel_regularizer=regularizers.l1_l2(l1=1e-5, l2=1e-4),
                                   bias_regularizer=regularizers.l2(1e-4),
                                   activity_regularizer=regularizers.l2(1e-5))(x)
     x2 = Dropout(0.15)(x2, training=training)
