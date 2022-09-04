@@ -9,9 +9,9 @@ from tensorflow.keras.layers import Conv1D, Activation, Dense, \
 def CNN_2D_2D_model(image_length=224, training=False):
     ################# CNN stft ################################
     input_stft = Input(shape=(image_length, image_length, 1))
-    base_model_stft = tf.keras.applications.EfficientNetV2M(include_top=False,
-                                                            input_shape=(image_length, image_length, 1),
-                                                            weights=None)
+    base_model_stft = tf.keras.applications.ResNet152V2(include_top=False,
+                                                        input_shape=(image_length, image_length, 1),
+                                                        weights=None)
     model_stft = base_model_stft(input_stft, training=training)
     output_stft = Model(input_stft, model_stft)
     output_stft = output_stft([input_stft])
@@ -24,9 +24,9 @@ def CNN_2D_2D_model(image_length=224, training=False):
 
     ################# CNN mel ################################
     input_mel = Input(shape=(image_length, image_length, 1))
-    base_model_mel = tf.keras.applications.MobileNetV2(include_top=False,
-                                                        input_shape=(image_length, image_length, 1),
-                                                        weights=None)
+    base_model_mel = tf.keras.applications.EfficientNetV2M(include_top=False,
+                                                            input_shape=(image_length, image_length, 1),
+                                                            weights=None)
     model_mel = base_model_mel(input_mel, training=training)
     output_mel = Model(input_mel, model_mel)
     output_mel = output_mel([input_mel])
