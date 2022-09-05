@@ -250,10 +250,13 @@ def onehot_to(labels):
     a.append(i.index(1))
   return np.array(a)
 
-def two_permutation_data(ds):
+def two_permutation_data(ds, have_normal=False):
   data_1, data_2, label = ds
   number_label = onehot_to(label)
-  label_idx_1 = {1: [], 2: [], 3: []}  # don't choose normal labels
+  if have_normal:
+    label_idx_1 = {0: [], 1: [], 2: [], 3: []}  # don't choose normal labels
+  else:
+    label_idx_1 = {1: [], 2: [], 3: []}  # don't choose normal labels
 
   data_1_one = []
   data_2_one = []
@@ -264,8 +267,11 @@ def two_permutation_data(ds):
   np.random.seed(0)
 
   for idx, i in enumerate(number_label):
-    if i != 0:
+    if have_normal:
       label_idx_1[i].append(idx)
+    else:
+        if i != 0:
+          label_idx_1[i].append(idx)
 
   # get the shortest length---------------------------
   all_len = []
@@ -318,10 +324,10 @@ def two_permutation_data(ds):
   ds_two = (data_1_two, data_2_two, labels_two)
   return ds_one, ds_two
 
-def mix_up(ds, args, alpha=[0.15, 0.2, 0.175], batch_size_range=[1024, 1024, 1024]):
+def mix_up(ds, args, alpha=[0.15, 0.2], batch_size_range=[1024, 1024], have_normal=False):
     # Unpack two datasets
     images_org, ffts_org, labels_org = ds 
-    ds_one, ds_two = two_permutation_data(ds)
+    ds_one, ds_two = two_permutation_data(ds, have_normal=have_normal)
     images_one, ffts_one, labels_one = ds_one 
     images_two, ffts_two, labels_two = ds_two
 
