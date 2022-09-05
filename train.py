@@ -178,11 +178,14 @@ def train(args):
     #-------------------------- MIXUP --------------------------------------------------------------------
     if args.type_1D != None:
       train_ds = (image_train_data, train_fft, train_label)
-      images_org, ffts_org, labels_org = mix_up(train_ds, args)
-      
     if args.based_image == 'mel_stft':
       train_ds = (mel_image_train_data, stft_image_train_data, train_label)
-      images_org, ffts_org, labels_org = mix_up(train_ds, args)
+      
+    images_org_1, ffts_org_1, labels_org_1 = mix_up(train_ds, args, have_normal=False)
+    images_org_2, ffts_org_2, labels_org_2 = mix_up(train_ds, args, have_normal=True)
+    images_org = np.concatenate((images_org_1, images_org_2), axis=0)
+    ffts_org = np.concatenate((ffts_org_1, ffts_org_2), axis=0)
+    labels_org = np.concatenate((labels_org_1, labels_org_2), axis=0)
 
 
     print(f'\nShape of 1D MIXUP training data: {images_org.shape}, {ffts_org.shape}, {labels_org.shape}\n')
