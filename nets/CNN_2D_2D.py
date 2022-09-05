@@ -9,7 +9,7 @@ from tensorflow.keras.layers import Conv1D, Activation, Dense, \
 def CNN_2D_2D_model(image_length=224, training=False):
     ################# CNN stft ################################
     input_stft = Input(shape=(image_length, image_length, 1))
-    base_model_stft = tf.keras.applications.ResNet152V2(include_top=False,
+    base_model_stft = tf.keras.applications.EfficientNetV2M(include_top=False,
                                                         input_shape=(image_length, image_length, 1),
                                                         weights=None)
     model_stft = base_model_stft(input_stft, training=training)
