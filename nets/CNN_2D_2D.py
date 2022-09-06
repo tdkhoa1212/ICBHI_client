@@ -9,7 +9,7 @@ from tensorflow.keras.layers import Conv1D, Activation, Dense, \
 def CNN_2D_2D_model(image_length=224, training=False):
     ################# CNN stft ################################
     input_stft = Input(shape=(image_length, image_length, 1))
-    base_model_stft = tf.keras.applications.EfficientNetV2M(include_top=False,
+    base_model_stft = tf.keras.applications.InceptionResNetV2(include_top=False,
                                                         input_shape=(image_length, image_length, 1),
                                                         weights=None)
     model_stft = base_model_stft(input_stft, training=training)
@@ -20,7 +20,7 @@ def CNN_2D_2D_model(image_length=224, training=False):
                                   kernel_regularizer=regularizers.l1_l2(l1=1e-5, l2=1e-4),
                                   bias_regularizer=regularizers.l2(1e-4),
                                   activity_regularizer=regularizers.l2(1e-5))(output_stft)
-#     output_stft = Dropout(0.2)(output_stft, training=training)
+    output_stft = BatchNormalization()(output_stft, training=training)
 
     ################# CNN mel ################################
     input_mel = Input(shape=(image_length, image_length, 1))
@@ -35,11 +35,13 @@ def CNN_2D_2D_model(image_length=224, training=False):
                                   kernel_regularizer=regularizers.l1_l2(l1=1e-5, l2=1e-4),
                                   bias_regularizer=regularizers.l2(1e-4),
                                   activity_regularizer=regularizers.l2(1e-5))(output_mel)
-#     output_mel = Dropout(0.2)(output_mel, training=training)
+    output_mel = BatchNormalization()(output_mel, training=training)
 
     ################# CNN mel vs stft ################################
 #     output = concatenate((output_mel, output_stft))
     output = output_stft + output_mel
+    output = BatchNormalization()(output, training=training)
+    output = Activation('relu')(output)
     output = Dropout(0.2)(output, training=training)
     output = Dense(4, activation='softmax', 
                             kernel_regularizer=regularizers.l1_l2(l1=1e-5, l2=1e-4),
