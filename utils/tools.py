@@ -133,7 +133,7 @@ def create_spectrograms_raw(current_window, sample_rate=4000, n_mels=224, f_min=
       need = w-h
       l = need//2
       img_zer = np.zeros((w, w))
-      img_zer[:, l: l+h] = S
+      img_zer[:, l: l+h] = img
       img = img_zer
 
     img = np.expand_dims(img, axis=-1) # add depth dimension
