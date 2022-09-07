@@ -15,6 +15,7 @@ def CNN_2D_2D_model(image_length=224, training=False):
     model_stft = base_model_stft(input_stft, training=training)
     output_stft = Model(input_stft, model_stft)
     output_stft = output_stft([input_stft])
+    output_stft  = MultiHeadAttention(head_size=16, num_heads=16)([output_stft, output_stft, output_stft]) 
     output_stft = GlobalAveragePooling2D()(output_stft)
     output_stft = tf.keras.layers.Dense(1024,  activation='relu',
                                   kernel_regularizer=regularizers.l1_l2(l1=1e-5, l2=1e-4),
@@ -30,6 +31,7 @@ def CNN_2D_2D_model(image_length=224, training=False):
     model_mel = base_model_mel(input_mel, training=training)
     output_mel = Model(input_mel, model_mel)
     output_mel = output_mel([input_mel])
+    output_mel  = MultiHeadAttention(head_size=16, num_heads=16)([output_mel, output_mel, output_mel]) 
     output_mel = GlobalAveragePooling2D()(output_mel)
     output_mel = tf.keras.layers.Dense(1024,  activation='relu',
                                   kernel_regularizer=regularizers.l1_l2(l1=1e-5, l2=1e-4),
