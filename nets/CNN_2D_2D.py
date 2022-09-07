@@ -1,4 +1,5 @@
 import tensorflow as tf
+from tensorflow_addons.layers import MultiHeadAttention
 from tensorflow.keras import Model, regularizers
 from tensorflow.keras.layers import Conv1D, Activation, Dense, \
                                     concatenate, BatchNormalization, GlobalAveragePooling1D, \
