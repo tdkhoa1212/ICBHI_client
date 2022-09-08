@@ -207,7 +207,7 @@ def train(args):
     if args.model_name == 'Model_2D2D':
       model = CNN_2D_2D_model(args.image_length, True)
 
-    name = 'model_' + args.model_name + '_' + args.based_image + '.h5'
+    name = 'model_' + args.model_name + '_' + args.based_image + '.tf'
     if args.load_weight:
       print(f'\nLoad weight file from {os.path.join(args.model_path, name)}\n')
       model.load_weights(os.path.join(args.model_path, name))
