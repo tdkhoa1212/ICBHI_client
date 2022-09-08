@@ -26,7 +26,7 @@ def CNN_2D_2D_model(image_length=224, training=False):
 
     ################# CNN mel ################################
     input_mel = Input(shape=(image_length, image_length, 1))
-    base_model_mel = tf.keras.applications.MobileNetV2(include_top=False,
+    base_model_mel = tf.keras.applications.InceptionResNetV2(include_top=False,
                                                             input_shape=(image_length, image_length, 1),
                                                             weights=None)
     model_mel = base_model_mel(input_mel, training=training)
