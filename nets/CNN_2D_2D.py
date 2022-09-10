@@ -52,7 +52,7 @@ def CNN_2D_2D_model(image_length=224, training=False):
 '''
 
 def multi_head(x, num_heads=16, training=None):
-  x = tf.keras.layers.Dense(output_stft.shape[-1],  activation='relu',
+  x = tf.keras.layers.Dense(x.shape[-1],  activation='relu',
                                       kernel_regularizer=regularizers.l1_l2(l1=1e-5, l2=1e-4),
                                       bias_regularizer=regularizers.l2(1e-4),
                                       activity_regularizer=regularizers.l2(1e-5))(x)
