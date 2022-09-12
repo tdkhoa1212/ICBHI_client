@@ -59,11 +59,11 @@ def multi_head(x, num_heads=16, training=None):
 #   x = Dropout(0.2)(x, training=training)
   x  = MultiHeadAttention(head_size=num_heads, num_heads=num_heads)([x, x, x]) 
   x = GlobalAveragePooling2D()(x)
+  x = BatchNormalization()(x, training=training)
   x = tf.keras.layers.Dense(x.shape[-1],  activation='relu',
                                     kernel_regularizer=regularizers.l1_l2(l1=1e-5, l2=1e-4),
                                     bias_regularizer=regularizers.l2(1e-4),
                                     activity_regularizer=regularizers.l2(1e-5))(x)
-  x = BatchNormalization()(x, training=training)
   x = tf.keras.layers.Dense(1024,  activation='relu',
                                 kernel_regularizer=regularizers.l1_l2(l1=1e-5, l2=1e-4),
                                 bias_regularizer=regularizers.l2(1e-4),
