@@ -53,18 +53,13 @@ def CNN_2D_2D_model(image_length=224, training=False):
 
 def multi_head(x, num_heads=16, training=None):
   x = MultiHeadAttention(head_size=num_heads, num_heads=num_heads)([x, x, x]) 
-  x = BatchNormalization()(x, training=training)
-  x = tf.keras.layers.Dense(x.shape[-1],
-                            activation='relu',
-                            kernel_regularizer=regularizers.l1_l2(l1=1e-5, l2=1e-4),
-                            bias_regularizer=regularizers.l2(1e-4),
-                            activity_regularizer=regularizers.l2(1e-5))(x)
   x = GlobalAveragePooling2D()(x)
   x = BatchNormalization()(x, training=training)
   x = tf.keras.layers.Dense(1024,  activation='relu',
                                 kernel_regularizer=regularizers.l1_l2(l1=1e-5, l2=1e-4),
                                 bias_regularizer=regularizers.l2(1e-4),
                                 activity_regularizer=regularizers.l2(1e-5))(x)
+  
   return x
   
 def CNN_2D_2D_model(image_length=224, training=False):
@@ -89,7 +84,6 @@ def CNN_2D_2D_model(image_length=224, training=False):
     output_mel = multi_head(output_mel, training=training)
 
     ################# CNN mel vs stft ################################
-#     output = concatenate((output_mel, output_stft))
     output = output_stft + output_mel
     output = Activation('relu')(output)
     output = Dropout(0.2)(output, training=training)
